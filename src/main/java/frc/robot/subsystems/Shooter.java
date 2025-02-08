@@ -1,112 +1,83 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ClimberConstants;
 
-public class Shooter extends SubsystemBase{
-    /* We should use velocity control to ensure consistant performance.
-     * An idle mode for default will help with faster acceleration.
-     * A low speed is also needed for AMP.
-     */
-    private final CANSparkMax top;
-    private final CANSparkMax bottom;
-    private final RelativeEncoder topEncoder;
-    private final RelativeEncoder bottomEncoder;
-    private final SparkPIDController topVelController;
-    private final SparkPIDController bottomVelController;
+public class Shooter extends SubsystemBase {
+    private SparkMax leftMotor;
+    private SparkMax rightMotor;
+    private SparkMaxConfig leftConfig;
+    private SparkMaxConfig rightConfig;
+    private RelativeEncoder encoder;
+    private DigitalInput limitSwitch;
+    SparkClosedLoopController m_controller = leftMotor.getClosedLoopController();
 
-    public Shooter(int topRollerID, int bottomRollerID) {
-        top = new CANSparkMax(topRollerID, MotorType.kBrushless);
-        bottom = new CANSparkMax(bottomRollerID, MotorType.kBrushless);
+    public Shooter(int leftID, int rightID) {
 
-        top.restoreFactoryDefaults();
-        bottom.restoreFactoryDefaults();
+        leftMotor = new SparkMax(leftID, MotorType.kBrushless);
+        rightMotor = new SparkMax(rightID, MotorType.kBrushless);
+        // leftMotor.restoreFactoryDefaults();
+        // rightMotor.restoreFactoryDefaults();
 
-        top.setSmartCurrentLimit(40);
-        bottom.setSmartCurrentLimit(40);
-        top.setIdleMode(IdleMode.kCoast);
-        bottom.setIdleMode(IdleMode.kCoast);
+        encoder = leftMotor.getEncoder();
+        // pid = leftMotor.getPIDController();
 
-        top.enableVoltageCompensation(12.6);
-        bottom.enableVoltageCompensation(12.6);
+        // leftMotor.restoreFactoryDefaults();
+        // rightMotor.restoreFactoryDefaults();
+        leftConfig
+        .inverted(false)
+        .smartCurrentLimit(40)
+        .voltageCompensation(12.6)
+        .idleMode(IdleMode.kBrake);
+    //  leftConfig.closedLoop
+    //  .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //  .p(0)
+    //  .i(0)
+    //  .d(0)
+    //  .outputRange(0, 1);
+        leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        top.setInverted(false);
-        bottom.setInverted(false);
-
-        topEncoder = top.getEncoder();
-        bottomEncoder = bottom.getEncoder();
-
-        topVelController = top.getPIDController();
-        bottomVelController = bottom.getPIDController();
-        topVelController.setFeedbackDevice(topEncoder);
-        bottomVelController.setFeedbackDevice(bottomEncoder);
-
-        topVelController.setP(ShooterConstants.kP);
-        topVelController.setI(ShooterConstants.kI);
-        topVelController.setD(ShooterConstants.kD);
-        topVelController.setIZone(ShooterConstants.kIz);
-        topVelController.setFF(ShooterConstants.kFF);
-        topVelController.setOutputRange(-ShooterConstants.kMaxRPM, ShooterConstants.kMaxRPM);
-
-        bottomVelController.setP(ShooterConstants.kP);
-        bottomVelController.setI(ShooterConstants.kI);
-        bottomVelController.setD(ShooterConstants.kD);
-        bottomVelController.setIZone(ShooterConstants.kIz);
-        bottomVelController.setFF(ShooterConstants.kFF);
-        bottomVelController.setOutputRange(-ShooterConstants.kMaxRPM, ShooterConstants.kMaxRPM);
+        rightConfig
+        .apply(leftConfig)
+        .follow(leftID)
+        .inverted(true);
+        rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
     }
 
-    public void runAtSpeed(double target) {
-        double setpoint = target * ShooterConstants.kCompenstion;
-        topVelController.setReference(setpoint, ControlType.kVelocity);
-        bottomVelController.setReference(setpoint, ControlType.kVelocity);
-        //System.out.println(setpoint + " " + top.getOutputCurrent());
-    }
-
-    public void runOpenLoop(double topSpeed, double bottomSpeed) {
-        top.set(topSpeed);
-        bottom.set(bottomSpeed);
-    }
-    public void stop() {
-        top.set(0);
-        bottom.set(0);
-    }
-
-    public double getTopVelocity() {
-        return topEncoder.getVelocity();
-    }
-
-    public double getBottomVelocity() {
-        return bottomEncoder.getVelocity();
-    }
-
-    public double getAvgVelocity() {
-        return (getTopVelocity() + getBottomVelocity())/2;
-    }
-
-    public double[] getOutputCurrent() {
-        double result[] = {top.getOutputCurrent(), bottom.getOutputCurrent()};
-        return result;
-    }
-
-    public double[] getTemp() {
-        double result[] = {top.getMotorTemperature(), bottom.getMotorTemperature()};
-        return result;
-    }
-
-    // public boolean isSafeTemp() {
-    //    if ((getTemp()[0] >= ShooterConstants.kThermalLimit) || (getTemp()[1] >= ShooterConstants.kThermalLimit)) {
-    //         return false;
-    //     }
-    //     else {
-    //         return true;
-    //     }
-    // }
-    
+public void runClimber(double speed) {
+leftMotor.set(speed);
+}
+// public void elevatorToPosition(double setPoint) {
+// // Set the setpoint of the PID controller in raw position mode
+// m_controller.setReference(setPoint, ControlType.kPosition);
+// }
+public void stop() {
+leftMotor.set(0);
+}
+public double getPos() {
+        return encoder.getPosition();
+}
+@Override
+public void periodic() {
+        SmartDashboard.putNumber("Climber Position", getPos());
+}
 }

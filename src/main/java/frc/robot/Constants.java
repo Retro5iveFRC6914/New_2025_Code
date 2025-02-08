@@ -27,7 +27,7 @@ public final class Constants {
 //* arm constants
             
     }
-    public static final class ArmConstants {
+    public static final class ElevatorConstants {
         public static final int kLeftID = 14;
         public static final int kRightID = 15;
         public static final double kStowPos = 0.5;
@@ -92,7 +92,7 @@ public final class Constants {
     public static final double kTolerance = 16;
   }
 //* Climber constants 
-    public static final class ClimbingConstants {
+    public static final class ClimberConstants {
     public static final int kLeftID = 23;
     public static final int kRightID = 24;
     public static final double kP = 0.1; 

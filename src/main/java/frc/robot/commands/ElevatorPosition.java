@@ -29,13 +29,13 @@ public class ElevatorPosition extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.elevatorToPosition(setpoint);
+    elevator.runToPosition(setpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stop();
+    elevator.run(0);
   }
 
   // Returns true when the command should end.

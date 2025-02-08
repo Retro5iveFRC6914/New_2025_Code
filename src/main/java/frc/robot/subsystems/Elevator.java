@@ -115,7 +115,7 @@ public class Elevator extends SubsystemBase {
   public void runToPosition(double setpoint) {
     leftMotor.setControl(m_request.withPosition(setpoint));
 }
-public void RunArm(double setpoint) {
+public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
 public double getPos() {
