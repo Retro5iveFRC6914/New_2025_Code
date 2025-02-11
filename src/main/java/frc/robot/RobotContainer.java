@@ -27,7 +27,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -53,8 +52,7 @@ import frc.robot.commands.ElevatorPosition;
 public class RobotContainer {
   // The robot's subsystems
   public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID);
-  public final Intake m_intake = new Intake(IntakeConstants.kIntakeID, IntakeConstants.kSensorDIOPort);
-  public final Shooter m_shooter = new Shooter(ShooterConstants.kTopID, ShooterConstants.kBottomID);
+  public final Intake m_intake = new Intake(IntakeConstants.kLeftID, IntakeConstants.kRightID, IntakeConstants.kCoralID);
   public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
 
   /* Controllers */
@@ -88,18 +86,32 @@ public class RobotContainer {
    * {@link XboxButton}.
    */
   private void configureButtonBindings() {
+// L1 Pos
   operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
+  // L2 Pos
   operatorXboxController.b().onTrue(new ElevatorPosition(m_elevator, 0));
+ // L3 Pos
   operatorXboxController.x().onTrue(new ElevatorPosition(m_elevator, 0));
+ // L4 Pos
   operatorXboxController.y().onTrue(new ElevatorPosition(m_elevator, 0));
-  operatorXboxController.leftTrigger().whileTrue(new RunAlgae(m_intake, 1));
-  operatorXboxController.rightTrigger().whileTrue(new RunAlgae(m_intake, -1));
-  operatorXboxController.leftBumper().whileTrue(new RunCoral(m_intake, 1));
-  operatorXboxController.rightBumper().whileTrue(new RunCoral(m_intake, -1));
-
-  driverXboxController.leftTrigger().whileTrue(new RunClimber(m_climber, 0));
-  driverXboxController.rightTrigger().whileTrue(new RunClimber(m_climber, 0));
-  }
+ // Runs intake for Algae in 
+  operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_intake.runAlgae(1), m_intake))
+  .onFalse(new RunCommand(() -> m_intake.runAlgae(0), m_intake));
+// Runs intake for Algae out 
+  operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_intake.runAlgae(-1), m_intake))
+  .onFalse(new RunCommand(() -> m_intake.algaeStop(), m_intake));
+// Runs the intake for Coral in 
+  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_intake.runCoral(1), m_intake))
+  .onFalse(new RunCommand(() -> m_intake.algaeStop(), m_intake));
+// Runs the intake for Coral out 
+  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_intake.runCoral(-1), m_intake))
+  .onFalse(new RunCommand(() -> m_intake.runCoral(0), m_intake));
+// Runs the Climber to go up 
+  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
+// Runs the Climber to go down
+  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(-1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));  }
     
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();

@@ -48,7 +48,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ElevatorConstants;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -106,9 +106,9 @@ public class Elevator extends SubsystemBase {
     var slot0Configs = new Slot0Configs();
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    slot0Configs.kP = ArmConstants.kP;
-    slot0Configs.kI = ArmConstants.kI;
-    slot0Configs.kD = ArmConstants.kD;
+    slot0Configs.kP = ElevatorConstants.kP;
+    slot0Configs.kI = ElevatorConstants.kI;
+    slot0Configs.kD = ElevatorConstants.kD;
    //m_voltagePosition.Slot = 0;
     leftMotor.getConfigurator().apply(slot0Configs);
   }
