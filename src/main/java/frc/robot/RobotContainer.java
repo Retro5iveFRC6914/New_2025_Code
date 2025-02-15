@@ -67,6 +67,17 @@ public class RobotContainer {
 
   public RobotContainer(){
     // Register Named Commands
+        // NamedCommands.registerCommand("intake", intake);
+    // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
+    // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
+    NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
+    NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    // NamedCommands.registerCommand("armToIntake", new ArmToTarget(m_arm, 0).withTimeout(1.5));
+    NamedCommands.registerCommand("armToSpeaker", new ElevatorPosition(m_elevator, ElevatorConstants.kAutoSpeakerPos).withTimeout(1.5));
+    NamedCommands.registerCommand("runIntake", new RunShooterAtVelocity====(m_intake, .5, .8).withTimeout(3));
+    NamedCommands.registerCommand("scoreCoral", new RunIntake(m_intake, 1).withTimeout(1.5));
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
     // Another option that allows you to specify the default auto by its name
@@ -111,7 +122,16 @@ public class RobotContainer {
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
 // Runs the Climber to go down
   driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(-1), m_climber))
-  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));  }
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
+// buttons for Limelight need to convert later to 2025 version
+//   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive
+// .withVelocityX(-LimelightHelpers.getTX("limelight-thehulk") * 0.1) // Drive forward with
+// // negative Y (forward)
+// .withVelocityY(-LimelightHelpers.getTY("limelight-thehulk") * 0.1) // Drive left with negative X (left)
+// .withRotationalRate(-LimelightHelpers.getTA("limelight-thehulk") * 0.1) // Drive counterclockwise with negative X (left)
+// ));
+
+}
     
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
