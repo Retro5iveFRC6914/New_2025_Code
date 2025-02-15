@@ -46,7 +46,11 @@ public final class Constants {
         public static final double kLowerLimit = 0.01;
         public static final double kOverrunLimit = 0;
     
-        public static final double kP = 128; //TODO changed this 
+        public static final double kS = 0; //TODO changed this 
+        public static final double kV = 0; //TODO changed this 
+        public static final double kA = 0; //TODO changed this 
+
+        public static final double kP = 0; //TODO changed this 
         public static final double kI = 0;
         public static final double kD = 0; 
         public static final double kIz = 0; 

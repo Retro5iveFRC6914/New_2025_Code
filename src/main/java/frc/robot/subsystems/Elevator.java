@@ -104,8 +104,11 @@ public class Elevator extends SubsystemBase {
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
     // creates PID values for motor (hopefully)
     var slot0Configs = new Slot0Configs();
-    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
     slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    slot0Configs.kS = ElevatorConstants.kS;
+    slot0Configs.kV = ElevatorConstants.kV;
+    slot0Configs.kA = ElevatorConstants.kA;
     slot0Configs.kP = ElevatorConstants.kP;
     slot0Configs.kI = ElevatorConstants.kI;
     slot0Configs.kD = ElevatorConstants.kD;

@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1_right_coral_s1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2_right_coral_s2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2_right_coral_s3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3_right_coral_s4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3_right_coral_s5"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
