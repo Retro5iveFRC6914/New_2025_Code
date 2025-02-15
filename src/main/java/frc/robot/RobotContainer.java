@@ -70,14 +70,20 @@ public class RobotContainer {
         // NamedCommands.registerCommand("intake", intake);
     // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
     // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
+  // elevator levels 
     NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
     NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, 0).withTimeout(2));
     NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
     NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
-    // NamedCommands.registerCommand("armToIntake", new ArmToTarget(m_arm, 0).withTimeout(1.5));
-    NamedCommands.registerCommand("armToSpeaker", new ElevatorPosition(m_elevator, ElevatorConstants.kAutoSpeakerPos).withTimeout(1.5));
-    NamedCommands.registerCommand("runIntake", new RunShooterAtVelocity====(m_intake, .5, .8).withTimeout(3));
-    NamedCommands.registerCommand("scoreCoral", new RunIntake(m_intake, 1).withTimeout(1.5));
+   // stuff to grab and score coral
+    NamedCommands.registerCommand("grabCoral", new RunCoral(m_intake, 1).withTimeout(1.5));
+    NamedCommands.registerCommand("scoreCoral", new RunCoral(m_intake, -1).withTimeout(1.5));
+// stuff to grab and score algae 
+    NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_intake, 1).withTimeout(1.5));
+    NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_intake, -1).withTimeout(1.5));
+
+
+
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
     // Another option that allows you to specify the default auto by its name

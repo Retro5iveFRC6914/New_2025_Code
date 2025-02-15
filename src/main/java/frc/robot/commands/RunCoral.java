@@ -4,46 +4,45 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 
-public class RunIntake extends Command {
-  private Intake intake;
-  private double topSpeed;
-  private double bottomSpeed;
-
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class RunCoral extends Command {
+  /** Creates a new RunAlgae. */
+   private final Intake intaker;
+  private double setpoint;
   private boolean end;
-  /** Creates a new RunIntake. */
-  public RunIntake(Intake launchingDevice, double topPercent, double bottomPercent) {
-    intake = launchingDevice;
-    topSpeed = topPercent;
-    bottomSpeed = bottomPercent;
-    end = false;
+  public RunCoral(Intake intake, double speed) {
+    intaker = intake;
+    setpoint = speed; 
+    addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(launchingDevice);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("init RunIntake");
+    end = false; 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.runOpenLoop(topSpeed, bottomSpeed);
+    intaker.runCoral(setpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.runOpenLoop(0,0);
-    }
+    intaker.runCoral(0); // change speed later for later 
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return end;
+    return false;
   }
 }
