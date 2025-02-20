@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.revrobotics.AbsoluteEncoder;
 
 import javax.swing.text.Position;
 
@@ -44,6 +45,9 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;*/
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -59,6 +63,8 @@ public class Elevator extends SubsystemBase {
     private final TalonFX rightMotor;
     //Creates CANcoder object for the CANcoder encoder
     private final CANcoder encoder;
+    private Encoder throughBore;
+    private final DigitalInput optical;
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
@@ -70,6 +76,8 @@ public class Elevator extends SubsystemBase {
 //declares the motors as motors with the ID's from the arguments
     leftMotor = new TalonFX(leftID);
     rightMotor = new TalonFX(rightID);
+    throughBore = new Encoder(1,2);
+    optical = new DigitalInput(3);
     TalonFXConfiguration TalonFXConfigs = new TalonFXConfiguration();
     TalonFXConfigurator LeftTalonFXConfigurator = leftMotor.getConfigurator();
     TalonFXConfigurator RightTalonFXConfigurator = rightMotor.getConfigurator();
@@ -122,11 +130,18 @@ public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
 public double getPos() {
-  return encoder.getPosition().getValueAsDouble();
+  return throughBore.get();
+}
+public boolean getOptical() {
+  return !optical.get();
 }
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("getPos",getPos());
+    if(getOptical() == true) {
+      throughBore.reset();
+    }
+    SmartDashboard.putBoolean("Zero Sensor", getOptical());
+    SmartDashboard.putNumber("Through Bore Position",getPos());
 
   }
 }
