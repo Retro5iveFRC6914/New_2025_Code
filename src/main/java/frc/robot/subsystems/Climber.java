@@ -1,83 +1,132 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+// falcsons instead of neos so change everything 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
+import javax.swing.text.Position;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.StrictFollower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+/*import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;*/
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+
 public class Climber extends SubsystemBase {
-    private SparkMax leftMotor;
-    private SparkMax rightMotor;
-    private SparkMaxConfig leftConfig;
-    private SparkMaxConfig rightConfig;
-    private RelativeEncoder encoder;
-    private DigitalInput limitSwitch;
-    SparkClosedLoopController m_controller = leftMotor.getClosedLoopController();
+  /** Creates a new phoenix. */  
+  //Creates TalonFX objects for motors 
+    private final TalonFX leftMotor;
+    private final TalonFX rightMotor;
+    //Creates CANcoder object for the CANcoder encoder
+    private final CANcoder encoder;
+    //Creates MotorOutputConfigs object, and resets motor output configs
+    private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
+    //Creates CurrentLimitsConfigs object, and resets current limits configs
+    private final CurrentLimitsConfigs m_currentLimits = new CurrentLimitsConfigs();
+   // private final DutyCycleOut m_output = new DutyCycleOut(0);
+    final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
     public Climber(int leftID, int rightID) {
+//declares the motors as motors with the ID's from the arguments
+    leftMotor = new TalonFX(leftID);
+    rightMotor = new TalonFX(rightID);
+    TalonFXConfiguration TalonFXConfigs = new TalonFXConfiguration();
+    TalonFXConfigurator LeftTalonFXConfigurator = leftMotor.getConfigurator();
+    TalonFXConfigurator RightTalonFXConfigurator = rightMotor.getConfigurator();
+    // sets to factory default
+    LeftTalonFXConfigurator.apply(new TalonFXConfiguration());
+    RightTalonFXConfigurator.apply(new TalonFXConfiguration());
+    //declares new cancoder       
+    encoder = new CANcoder(21);
+    // creates current limit for motors
+    m_currentLimits.SupplyCurrentLimit = 140;
+    TalonFXConfigs.CurrentLimits = m_currentLimits;
+    //set current limit for left motor
+    LeftTalonFXConfigurator.apply(m_currentLimits); 
+    //set current limit for right motor
+    RightTalonFXConfigurator.apply(m_currentLimits); 
+    //inverts one motor to create rotation
+    TalonFXConfigs.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+    TalonFXConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    LeftTalonFXConfigurator.apply(TalonFXConfigs);
+    //INVERTS ONE MOTOR
+    m_MotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
+    //leftMotor.setInverted(false);
+    RightTalonFXConfigurator.apply(m_MotorOutputConfigs);
+    //sets to brake mode
+    leftMotor.setNeutralMode(NeutralModeValue.Brake);
+    rightMotor.setNeutralMode(NeutralModeValue.Brake); 
+/* User can change the configs if they want, or leave it empty for factory-default */
+    /*  invert in software, 
+    encoder.setInverted; */
+   // strict followers ignore the leader's invert and use their own
+    rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
+    // creates PID values for motor (hopefully)
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
-        leftMotor = new SparkMax(leftID, MotorType.kBrushless);
-        rightMotor = new SparkMax(rightID, MotorType.kBrushless);
-        // leftMotor.restoreFactoryDefaults();
-        // rightMotor.restoreFactoryDefaults();
-
-        encoder = leftMotor.getEncoder();
-        // pid = leftMotor.getPIDController();
-
-        // leftMotor.restoreFactoryDefaults();
-        // rightMotor.restoreFactoryDefaults();
-        leftConfig
-        .inverted(false)
-        .smartCurrentLimit(40)
-        .voltageCompensation(12.6)
-        .idleMode(IdleMode.kBrake);
-    //  leftConfig.closedLoop
-    //  .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    //  .p(0)
-    //  .i(0)
-    //  .d(0)
-    //  .outputRange(0, 1);
-        leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        rightConfig
-        .apply(leftConfig)
-        .follow(leftID)
-        .inverted(true);
-        rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
-    }
-
-public void runClimber(double speed) {
-leftMotor.set(speed);
+    slot0Configs.kP = ClimberConstants.kP;
+    slot0Configs.kI = ClimberConstants.kI;
+    slot0Configs.kD = ClimberConstants.kD;
+   //m_voltagePosition.Slot = 0;
+    leftMotor.getConfigurator().apply(slot0Configs);
 }
-// public void elevatorToPosition(double setPoint) {
-// // Set the setpoint of the PID controller in raw position mode
-// m_controller.setReference(setPoint, ControlType.kPosition);
+  
+// public void runToPosition(double setpoint) {
+//     leftMotor.setControl(m_request.withPosition(setpoint));
 // }
-public void stop() {
-leftMotor.set(0);
-}
+public void runClimber(double setpoint) {
+  leftMotor.set(setpoint);
+  }
+  public void stop() {
+    leftMotor.set(0);
+    }
 public double getPos() {
-        return encoder.getPosition();
+  return encoder.getPosition().getValueAsDouble();
 }
-@Override
-public void periodic() {
-        SmartDashboard.putNumber("Climber Position", getPos());
-}
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("getPos",getPos());
+
+  }
 }

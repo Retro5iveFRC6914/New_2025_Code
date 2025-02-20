@@ -41,7 +41,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;*/
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -106,6 +105,7 @@ public class Elevator extends SubsystemBase {
     var slot0Configs = new Slot0Configs();
     slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
     slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    slot0Configs.kG = ElevatorConstants.kG;
     slot0Configs.kS = ElevatorConstants.kS;
     slot0Configs.kV = ElevatorConstants.kV;
     slot0Configs.kA = ElevatorConstants.kA;

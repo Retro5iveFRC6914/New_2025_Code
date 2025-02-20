@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1_middle_coral_s1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2_middle_coral_s2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2_middle_coral_s3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3_middle_coral_s4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3_middle_coral_s5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4_middle_coral_s6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4_middle_coral_s7"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
