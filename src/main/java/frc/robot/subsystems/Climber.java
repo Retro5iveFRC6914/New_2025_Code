@@ -57,8 +57,6 @@ public class Climber extends SubsystemBase {
   //Creates TalonFX objects for motors 
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
-    //Creates CANcoder object for the CANcoder encoder
-    private final CANcoder encoder;
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
@@ -77,7 +75,6 @@ public class Climber extends SubsystemBase {
     LeftTalonFXConfigurator.apply(new TalonFXConfiguration());
     RightTalonFXConfigurator.apply(new TalonFXConfiguration());
     //declares new cancoder       
-    encoder = new CANcoder(21);
     // creates current limit for motors
     m_currentLimits.SupplyCurrentLimit = 140;
     TalonFXConfigs.CurrentLimits = m_currentLimits;
@@ -86,8 +83,6 @@ public class Climber extends SubsystemBase {
     //set current limit for right motor
     RightTalonFXConfigurator.apply(m_currentLimits); 
     //inverts one motor to create rotation
-    TalonFXConfigs.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-    TalonFXConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     LeftTalonFXConfigurator.apply(TalonFXConfigs);
     //INVERTS ONE MOTOR
     m_MotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
@@ -121,12 +116,7 @@ public void runClimber(double setpoint) {
   public void stop() {
     leftMotor.set(0);
     }
-public double getPos() {
-  return encoder.getPosition().getValueAsDouble();
-}
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("getPos",getPos());
 
-  }
+ 
+  
 }

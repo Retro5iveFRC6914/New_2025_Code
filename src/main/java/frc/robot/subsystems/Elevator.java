@@ -62,7 +62,6 @@ public class Elevator extends SubsystemBase {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     //Creates CANcoder object for the CANcoder encoder
-    private final CANcoder encoder;
     private Encoder throughBore;
     private final DigitalInput optical;
     //Creates MotorOutputConfigs object, and resets motor output configs
@@ -84,9 +83,7 @@ public class Elevator extends SubsystemBase {
     // sets to factory default
     LeftTalonFXConfigurator.apply(new TalonFXConfiguration());
     RightTalonFXConfigurator.apply(new TalonFXConfiguration());
-    //declares new cancoder       
-    encoder = new CANcoder(21);
-    // creates current limit for motors
+   // creates current limit for motors
     m_currentLimits.SupplyCurrentLimit = 140;
     TalonFXConfigs.CurrentLimits = m_currentLimits;
     //set current limit for left motor
@@ -94,8 +91,8 @@ public class Elevator extends SubsystemBase {
     //set current limit for right motor
     RightTalonFXConfigurator.apply(m_currentLimits); 
     //inverts one motor to create rotation
-    TalonFXConfigs.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-    TalonFXConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    // TalonFXConfigs.Feedback.FeedbackRemoteSensorID = throughBore.getDeviceID();
+    TalonFXConfigs.Feedback.withFeedbackRotorOffset(throughBore.get());
     LeftTalonFXConfigurator.apply(TalonFXConfigs);
     //INVERTS ONE MOTOR
     m_MotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
@@ -141,7 +138,7 @@ public boolean getOptical() {
       throughBore.reset();
     }
     SmartDashboard.putBoolean("Zero Sensor", getOptical());
-    SmartDashboard.putNumber("Through Bore Position",getPos());
+    SmartDashboard.putNumber("Through Bore Position", getPos());
 
   }
 }

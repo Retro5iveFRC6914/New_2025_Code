@@ -45,16 +45,16 @@ public final class Constants {
         public static final double kUpperLimit = 0.3;
         public static final double kLowerLimit = 0.01;
         public static final double kOverrunLimit = 0;
-        public static final double kG = 0;
+        public static final double kG = 0; //TODO changed this
         public static final double kS = 0; //TODO changed this 
         public static final double kV = 0; //TODO changed this 
         public static final double kA = 0; //TODO changed this 
 
         public static final double kP = 0; //TODO changed this 
-        public static final double kI = 0;
-        public static final double kD = 0; 
-        public static final double kIz = 0; 
-        public static final double kFF = 0; 
+        public static final double kI = 0; //TODO changed this
+        public static final double kD = 0;  //TODO changed this
+        public static final double kIz = 0; //TODO changed this 
+        public static final double kFF = 0; //TODO changed this 
         public static final double kMaxOutput = 0.7; 
         public static final double kMinOutput = -0.7;
         public static final double kMaxAccel = 0.18;
