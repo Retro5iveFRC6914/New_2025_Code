@@ -14,17 +14,77 @@ import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.revrobotics.AbsoluteEncoder;
+
+import javax.swing.text.Position;
+
+
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.StrictFollower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Wrist extends SubsystemBase {
   /** Creates a new Wrist. */
-  private final TalonFXS wristMotor = new TalonFXS(0, "canivore");
+  private final TalonFXS wrist;
+  final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+  private DutyCycleEncoder throughBore;
   public Wrist(int wristID) {
-    TalonFXSConfiguration toConfigure = new TalonFXSConfiguration();
+    // Establishes wrist as a TalonFXS as a motor with an ID of the int parameter "wristID"
+    wrist = new TalonFXS(wristID);
+    //Establishes throughBore as an absolute encoder with an ID of 3
+    throughBore = new DutyCycleEncoder(3);
+    // Creates a new TalonFXS configuration
+    TalonFXSConfiguration wristConfigure = new TalonFXSConfiguration();
+    // Allows the configuration to know it is a Minion
+    wristConfigure.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+    // Sets a current limit of 40 amps
+    wristConfigure.CurrentLimits.withSupplyCurrentLimit(40);
+    // Sets the wrist to be counter clockwise positive
+    wristConfigure.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
+    // Makes the motor into brake mode
+    wrist.setNeutralMode(NeutralModeValue.Brake); 
+    // Sets the motor's gravity type to an arm type
+    wristConfigure.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
+    // PID values for the wrist motor
+    wristConfigure.Slot0.kP = 0;
+    wristConfigure.Slot0.kI = 0;
+    wristConfigure.Slot0.kD = 0;
+    // Applies the motor's configurations to the motor
+    wrist.getConfigurator().apply(wristConfigure);
   }
-
+  public void setToPosition(double setpoint) {
+    wrist.setControl(m_request.withPosition(setpoint));
+  }
+  public void run(double setpoint) {
+    wrist.set(setpoint);
+    }
+  public double getPos() {
+    return throughBore.get();
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Wrist Position", getPos());
   }
 }
