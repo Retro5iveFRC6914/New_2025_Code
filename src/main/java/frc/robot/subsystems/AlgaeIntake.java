@@ -21,26 +21,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
-public class Intake extends SubsystemBase {
+public class AlgaeIntake extends SubsystemBase {
     private SparkMax leftAlgaeMotor;
     private SparkMax rightAlgaeMotor;
-    private SparkMax coralMotor;
     private SparkMaxConfig leftAlgaeConfig;
     private SparkMaxConfig rightAlgaeConfig;
-    private SparkMaxConfig coralConfig;
     private RelativeEncoder encoder;
     private DigitalInput limitSwitch;
     SparkClosedLoopController m_controller = leftAlgaeMotor.getClosedLoopController();
 
-    public Intake(int leftID, int rightID, int coralID) {
+    public AlgaeIntake(int leftID, int rightID, int coralID) {
 
         leftAlgaeMotor = new SparkMax(leftID, MotorType.kBrushless);
         rightAlgaeMotor = new SparkMax(rightID, MotorType.kBrushless);
-        coralMotor = new SparkMax(coralID, MotorType.kBrushless);
         // leftAlgaeMotor.restoreFactoryDefaults();
         // rightAlgaeMotor.restoreFactoryDefaults();
 
-        encoder = coralMotor.getEncoder();
         // pid = leftAlgaeMotor.getPIDController();
 
         // leftAlgaeMotor.restoreFactoryDefaults();
@@ -64,12 +60,7 @@ public class Intake extends SubsystemBase {
         .inverted(true);
         rightAlgaeMotor.configure(rightAlgaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
-        coralConfig
-        .inverted(false)
-        .smartCurrentLimit(40)
-        .voltageCompensation(12.6)
-        .idleMode(IdleMode.kBrake);
-        coralMotor.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+       
     }
 
 public void runAlgae(double speed) {
@@ -82,17 +73,8 @@ leftAlgaeMotor.set(speed);
 public void algaeStop() {
 leftAlgaeMotor.set(0);
 }
-public void runCoral(double speed) {
-coralMotor.set(speed);
-}
-public void coralStop() {
-coralMotor.set(0);
-}
-public double getPos() {
-        return encoder.getPosition();
-}
+
+
 @Override
-public void periodic() {
-        SmartDashboard.putNumber("Coral Intake Position", getPos());
-}
+public void periodic() {}
 }

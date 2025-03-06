@@ -30,7 +30,8 @@ public final class Constants {
     public static final class ElevatorConstants {
         public static final int kLeftID = 14;
         public static final int kRightID = 15;
-        public static final double kStowPos = 0.5;
+        public static final int kEncoderID = 16;
+       
     
         //these 2 should be the same
         public static final double kIntakePos = 0.06;
@@ -39,12 +40,7 @@ public final class Constants {
         public static final double kFrontAmpPos = 0.15;
     
         // 3m position
-        public static final double k3mPos = 0.12;
-    
-        public static final double kBackAmpPos = 0.27;
-        public static final double kUpperLimit = 0.3;
-        public static final double kLowerLimit = 0.01;
-        public static final double kOverrunLimit = 0;
+       
         public static final double kG = 0; //TODO changed this
         public static final double kS = 0; //TODO changed this 
         public static final double kV = 0; //TODO changed this 
@@ -66,35 +62,7 @@ public final class Constants {
 //*  shooter constants
 
       }
-      public static final class ShooterConstants {
-        public static final int kTopID = 19;
-        public static final int kBottomID = 18;
     
-        // init v should be 6.7 m/s for subwoofer at intake pos
-    public static final double kSubwooferSpeed = 1259;
-    public static final double kTopSpeed = .5;
-    public static final double kBottomSpeed = .8;
-
-    // init v should be 8.2 m/s
-    public static final double k3mSpeed = 1500;
-
-    public static final double kCompenstion = 1.13;
-
-    public static final double kIdleSpeed = 700;
-    public static final double kAmpSpeed = 1100;
-
-    public static final double kP = 0.0003;
-    public static final double kI = 0.0;
-    public static final double kD = 0.000077;
-    public static final double kFF = 0.00018;
-    public static final double kIz = 0;
-    public static final double kMinOutput = -1;
-    public static final double kMaxOutput = 1;
-    public static final double kMaxRPM = 5676;
-    public static final double kLaunchTime = 1.5;
-    public static final double kThermalLimit = 48;
-    public static final double kTolerance = 16;
-  }
 //* Climber constants 
     public static final class ClimberConstants {
     public static final int kLeftID = 23;

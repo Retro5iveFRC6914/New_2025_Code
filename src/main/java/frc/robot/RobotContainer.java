@@ -23,10 +23,10 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.CoralIntake;
+import frc.robot.subsystems.AlgaeIntake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -51,9 +51,10 @@ import frc.robot.commands.ElevatorPosition;
  */
 public class RobotContainer {
   // The robot's subsystems
-  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID);
-  public final Intake m_intake = new Intake(IntakeConstants.kLeftID, IntakeConstants.kRightID, IntakeConstants.kCoralID);
+  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kEncoderID);
+  public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kLeftID, IntakeConstants.kRightID, IntakeConstants.kCoralID);
   public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
+  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralID);
 
   /* Controllers */
 
@@ -76,11 +77,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
     NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
    // stuff to grab and score coral
-    NamedCommands.registerCommand("grabCoral", new RunCoral(m_intake, 1).withTimeout(1.5));
-    NamedCommands.registerCommand("scoreCoral", new RunCoral(m_intake, -1).withTimeout(1.5));
+    NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
+    NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
 // stuff to grab and score algae 
-    NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_intake, 1).withTimeout(1.5));
-    NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_intake, -1).withTimeout(1.5));
+    NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_algaeIntake, 1).withTimeout(1.5));
+    NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_algaeIntake, -1).withTimeout(1.5));
 
 
 
@@ -112,17 +113,17 @@ public class RobotContainer {
  // L4 Pos
   operatorXboxController.y().onTrue(new ElevatorPosition(m_elevator, 0));
  // Runs intake for Algae in 
-  operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_intake.runAlgae(1), m_intake))
-  .onFalse(new RunCommand(() -> m_intake.runAlgae(0), m_intake));
+  operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(1), m_algaeIntake))
+  .onFalse(new RunCommand(() -> m_algaeIntake.runAlgae(0), m_algaeIntake));
 // Runs intake for Algae out 
-  operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_intake.runAlgae(-1), m_intake))
-  .onFalse(new RunCommand(() -> m_intake.algaeStop(), m_intake));
+  operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(-1), m_algaeIntake))
+  .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
 // Runs the intake for Coral in 
-  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_intake.runCoral(1), m_intake))
-  .onFalse(new RunCommand(() -> m_intake.algaeStop(), m_intake));
+  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_coralIntake.runCoral(1), m_coralIntake))
+  .onFalse(new RunCommand(() -> m_coralIntake.coralStop(), m_coralIntake));
 // Runs the intake for Coral out 
-  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_intake.runCoral(-1), m_intake))
-  .onFalse(new RunCommand(() -> m_intake.runCoral(0), m_intake));
+  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_coralIntake.runCoral(-1), m_coralIntake))
+  .onFalse(new RunCommand(() -> m_coralIntake.runCoral(0), m_coralIntake));
 // Runs the Climber to go up 
   driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(1), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));

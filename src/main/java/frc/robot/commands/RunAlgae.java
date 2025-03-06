@@ -6,15 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.AlgaeIntake;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunAlgae extends Command {
   /** Creates a new RunAlgae. */
-   private final Intake intaker;
+   private final AlgaeIntake intaker;
   private double setpoint;
   private boolean end;
-  public RunAlgae(Intake intake, double speed) {
+  public RunAlgae(AlgaeIntake intake, double speed) {
     intaker = intake;
     setpoint = speed; 
     addRequirements(intake);

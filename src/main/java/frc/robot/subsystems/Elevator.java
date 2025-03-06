@@ -30,6 +30,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -67,45 +68,39 @@ public class Elevator extends SubsystemBase {
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
-    private final CurrentLimitsConfigs m_currentLimits = new CurrentLimitsConfigs();
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-
-    public Elevator(int leftID, int rightID) {
+    private final CANcoder encoder;
+    private final FeedbackConfigs feedback;
+    public Elevator(int leftID, int rightID, int CANcoderID) {
 //declares the motors as motors with the ID's from the arguments
     leftMotor = new TalonFX(leftID);
     rightMotor = new TalonFX(rightID);
-    throughBore = new Encoder(1,2);
+    //throughBore = new Encoder(1,2);
+    encoder = new CANcoder(CANcoderID);
     optical = new DigitalInput(3);
-    TalonFXConfiguration TalonFXConfigs = new TalonFXConfiguration();
-    TalonFXConfigurator LeftTalonFXConfigurator = leftMotor.getConfigurator();
-    TalonFXConfigurator RightTalonFXConfigurator = rightMotor.getConfigurator();
-    // sets to factory default
-    LeftTalonFXConfigurator.apply(new TalonFXConfiguration());
-    RightTalonFXConfigurator.apply(new TalonFXConfiguration());
+    TalonFXConfiguration elevatorConfig = new TalonFXConfiguration();
+    feedback = new FeedbackConfigs();
    // creates current limit for motors
-    m_currentLimits.SupplyCurrentLimit = 140;
-    TalonFXConfigs.CurrentLimits = m_currentLimits;
-    //set current limit for left motor
-    LeftTalonFXConfigurator.apply(m_currentLimits); 
-    //set current limit for right motor
-    RightTalonFXConfigurator.apply(m_currentLimits); 
-    //inverts one motor to create rotation
-    // TalonFXConfigs.Feedback.FeedbackRemoteSensorID = throughBore.getDeviceID();
-    TalonFXConfigs.Feedback.withFeedbackRotorOffset(throughBore.get());
-    LeftTalonFXConfigurator.apply(TalonFXConfigs);
+    elevatorConfig.CurrentLimits.withSupplyCurrentLimit(140);
+
+    leftMotor.getConfigurator().apply(elevatorConfig);
+
+    rightMotor.getConfigurator().apply(elevatorConfig);
     //INVERTS ONE MOTOR
     m_MotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
     //leftMotor.setInverted(false);
-    RightTalonFXConfigurator.apply(m_MotorOutputConfigs);
+    rightMotor.getConfigurator().apply(m_MotorOutputConfigs);
     //sets to brake mode
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
     rightMotor.setNeutralMode(NeutralModeValue.Brake); 
 /* User can change the configs if they want, or leave it empty for factory-default */
-    /*  invert in software, 
-    encoder.setInverted; */
    // strict followers ignore the leader's invert and use their own
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
+    elevatorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+    elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+    elevatorConfig.Feedback.RotorToSensorRatio = 15;
+    leftMotor.getConfigurator().apply(elevatorConfig);
     // creates PID values for motor (hopefully)
     var slot0Configs = new Slot0Configs();
     slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
@@ -127,18 +122,19 @@ public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
 public double getPos() {
-  return throughBore.get();
+  // return throughBore.get();
+  return encoder.getPosition().getValueAsDouble();
 }
 public boolean getOptical() {
   return !optical.get();
 }
   @Override
   public void periodic() {
-    if(getOptical() == true) {
+   /*  if(getOptical() == true) {
       throughBore.reset();
-    }
+    } */
     SmartDashboard.putBoolean("Zero Sensor", getOptical());
-    SmartDashboard.putNumber("Through Bore Position", getPos());
+    SmartDashboard.putNumber("Elevator Position", getPos());
 
   }
 }
