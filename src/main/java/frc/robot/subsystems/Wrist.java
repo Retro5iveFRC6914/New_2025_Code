@@ -47,8 +47,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Wrist extends SubsystemBase {
   /** Creates a new Wrist. */
   private final TalonFXS wrist;
-  final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+  final PositionVoltage m_request;
   private DutyCycleEncoder throughBore;
+  boolean synced = false;
   public Wrist(int wristID) {
     // Establishes wrist as a TalonFXS as a motor with an ID of the int parameter "wristID"
     wrist = new TalonFXS(wristID);
@@ -65,6 +66,8 @@ public class Wrist extends SubsystemBase {
     // Makes the motor into brake mode
     wrist.setNeutralMode(NeutralModeValue.Brake); 
     // Sets the motor's gravity type to an arm type
+    wristConfigure.ExternalFeedback.withExternalFeedbackSensorSource(ExternalFeedbackSensorSourceValue.Commutation);
+    //wristConfigure.ExternalFeedback.withRotorToSensorRatio();
     wristConfigure.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
     // PID values for the wrist motor
     wristConfigure.Slot0.kP = 0;
@@ -72,9 +75,14 @@ public class Wrist extends SubsystemBase {
     wristConfigure.Slot0.kD = 0;
     // Applies the motor's configurations to the motor
     wrist.getConfigurator().apply(wristConfigure);
+    m_request = new PositionVoltage(getPos());
   }
   public void setToPosition(double setpoint) {
-    wrist.setControl(m_request.withPosition(setpoint));
+    if (synced = !synced) {
+    wrist.setPosition(getPos(), 1);
+    synced = !synced;
+  }
+  wrist.setControl(m_request.withPosition(setpoint));
   }
   public void run(double setpoint) {
     wrist.set(setpoint);
