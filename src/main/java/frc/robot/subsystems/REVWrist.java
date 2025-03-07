@@ -30,11 +30,11 @@ public class REVWrist extends SubsystemBase {
   private SparkMaxConfig wristConfig;
   private SparkClosedLoopController pidController;
   private DutyCycleEncoder encoder;
-
+  private AbsoluteEncoder throughbore;
   public REVWrist(int wristID) {
     wristMotor = new SparkMax(wristID, MotorType.kBrushless);
-    pidController = wristMotor.getClosedLoopController();
     encoder = new DutyCycleEncoder(3);
+    // throughbore = wristMotor.getAbsoluteEncoder();
     wristConfig
     .inverted(false)
     .smartCurrentLimit(40)
@@ -42,15 +42,22 @@ public class REVWrist extends SubsystemBase {
     .idleMode(IdleMode.kBrake);
     wristMotor.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     wristConfig.closedLoop
-    .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
     .p(0)
     .i(0)
     .d(0)
     .outputRange(-1, 1);
     wristMotor.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    pidController = wristMotor.getClosedLoopController();
+    wristMotor.getEncoder().setPosition(encoder.get());
   }
   public void runWrist(double speed) {
     wristMotor.set(speed);
+  }
+
+  public void wristToPosition(double setpoint) {
+    pidController.setReference(setpoint, ControlType.kPosition);
   }
   
   public void wristStop() {
@@ -59,5 +66,7 @@ public class REVWrist extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Reported Motor Position", wristMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Reported Encoder Position", encoder.get());
   }
 }
