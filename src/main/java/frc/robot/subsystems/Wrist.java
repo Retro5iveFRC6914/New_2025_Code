@@ -44,17 +44,22 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
 public class Wrist extends SubsystemBase {
   /** Creates a new Wrist. */
   private final TalonFXS wrist;
   final PositionVoltage m_request;
   private DutyCycleEncoder throughBore;
   boolean synced = false;
+  private final PIDController m_wristPID = new PIDController(0, 0.0, 0.0);
   public Wrist(int wristID) {
     // Establishes wrist as a TalonFXS as a motor with an ID of the int parameter "wristID"
     wrist = new TalonFXS(wristID);
     //Establishes throughBore as an absolute encoder with an ID of 3
     throughBore = new DutyCycleEncoder(3);
+    //PIDController tolerance
+    m_wristPID.setTolerance(0.01);
+
     // Creates a new TalonFXS configuration
     TalonFXSConfiguration wristConfigure = new TalonFXSConfiguration();
     // Allows the configuration to know it is a Minion
@@ -77,6 +82,7 @@ public class Wrist extends SubsystemBase {
     wrist.getConfigurator().apply(wristConfigure);
     m_request = new PositionVoltage(getPos());
   }
+
   public void setToPosition(double setpoint) {
     if (synced = !synced) {
     wrist.setPosition(getPos(), 1);
@@ -84,12 +90,19 @@ public class Wrist extends SubsystemBase {
   }
   wrist.setControl(m_request.withPosition(setpoint));
   }
+
+  public void runPID(double setpoint) {
+    wrist.set(m_wristPID.calculate(throughBore.get(), setpoint));
+  }
+
   public void run(double setpoint) {
     wrist.set(setpoint);
-    }
+  }
+
   public double getPos() {
     return throughBore.get();
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

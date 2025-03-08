@@ -19,7 +19,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
-
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,9 +31,12 @@ public class REVWrist extends SubsystemBase {
   private SparkClosedLoopController pidController;
   private DutyCycleEncoder encoder;
   private AbsoluteEncoder throughbore;
+  private final PIDController m_wristPID = new PIDController(0, 0.0, 0.0);
+
   public REVWrist(int wristID) {
     wristMotor = new SparkMax(wristID, MotorType.kBrushless);
     encoder = new DutyCycleEncoder(3);
+    m_wristPID.setTolerance(0.01);
     // throughbore = wristMotor.getAbsoluteEncoder();
     wristConfig
     .inverted(false)
@@ -60,8 +63,16 @@ public class REVWrist extends SubsystemBase {
     pidController.setReference(setpoint, ControlType.kPosition);
   }
   
+  public void runPID(double setpoint) {
+    wristMotor.set(m_wristPID.calculate(encoder.get(), setpoint));
+  }
+
   public void wristStop() {
     wristMotor.set(0);
+  }
+
+  public double getPos() {
+    return encoder.get();
   }
   @Override
   public void periodic() {

@@ -27,28 +27,48 @@ import frc.robot.Constants.ClimberConstants;
 
 public class CoralIntake extends SubsystemBase {
   /** Creates a new CoralIntake. */
-  private SparkMax coralMotor;
-  private SparkMaxConfig coralConfig;
-
-  public CoralIntake(int coralID) {
-    coralMotor = new SparkMax(coralID, MotorType.kBrushless);
-    coralConfig
+  private SparkMax armMotor;
+  private SparkMaxConfig armConfig; 
+  private SparkMax intakeMotor;
+  private SparkMaxConfig intakeConfig;
+  private SparkClosedLoopController armPID;
+  public CoralIntake(int intakeID, int armID) {
+    intakeMotor = new SparkMax(intakeID, MotorType.kBrushless);
+    intakeConfig
     .inverted(false)
     .smartCurrentLimit(40)
     .voltageCompensation(12.6)
     .idleMode(IdleMode.kBrake);
-    coralMotor.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+    intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    armMotor = new SparkMax(armID, MotorType.kBrushless);
+    armConfig
+    .inverted(false)
+    .smartCurrentLimit(40)
+    .voltageCompensation(12.6)
+    .idleMode(IdleMode.kBrake);
+    armMotor.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    armConfig.closedLoop
+    .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+    //.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+    .p(0)
+    .i(0)
+    .d(0)
+    .outputRange(-1, 1);
+    armMotor.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    armPID = armMotor.getClosedLoopController();
   }
   
   public void runCoral(double speed) {
-    coralMotor.set(speed);
+    intakeMotor.set(speed);
   }
   
   public void coralStop() {
-    coralMotor.set(0);
+    intakeMotor.set(0);
   }
   
+  public void intakeToPosition(double setpoint) {
+   armPID.setReference(setpoint, ControlType.kPosition);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
