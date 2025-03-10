@@ -54,7 +54,7 @@ public class RobotContainer {
   public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kEncoderID);
   public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kLeftID, IntakeConstants.kRightID, IntakeConstants.kCoralID);
   public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
-  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralID);
+  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralID, IntakeConstants.kCoralArmID);
 
   /* Controllers */
 

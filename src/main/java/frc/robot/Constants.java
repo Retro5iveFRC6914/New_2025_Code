@@ -100,6 +100,7 @@ public static final class DriverConstants {
             public static final int kLeftID = 17;
             public static final int kRightID = 0;
             public static final int kCoralID = 1;
+            public static final int kCoralArmID = 2;
             public static final double kIntakeSpeed = 0.4;
             public static final double kFeedSpeed = 3083;
             public static final double kReverseSpeed = 1;
