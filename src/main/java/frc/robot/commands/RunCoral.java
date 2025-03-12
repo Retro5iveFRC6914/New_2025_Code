@@ -29,13 +29,13 @@ public class RunCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intaker.runCoral(setpoint);
+    intaker.run(setpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intaker.runCoral(0); // change speed later for later 
+    intaker.run(0); // change speed later for later 
   }
 
   // Returns true when the command should end.

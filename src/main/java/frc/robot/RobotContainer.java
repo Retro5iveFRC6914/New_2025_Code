@@ -24,7 +24,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.AlgaeIntake;
 
@@ -43,6 +43,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import frc.robot.commands.*;
 import frc.robot.commands.ElevatorPosition;
+
   /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -51,10 +52,11 @@ import frc.robot.commands.ElevatorPosition;
  */
 public class RobotContainer {
   // The robot's subsystems
-  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kEncoderID);
-  public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kLeftID, IntakeConstants.kRightID, IntakeConstants.kCoralID);
-  public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
-  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralID, IntakeConstants.kCoralArmID);
+  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kCANCoderID);
+  public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kAlgaeID, IntakeConstants.kAlgaeArmID);
+  // public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
+  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralIntakeID);
+  public final Wrist m_wrist = new Wrist(IntakeConstants.kCoralWristID);
 
   /* Controllers */
 
@@ -105,31 +107,49 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 // L1 Pos
-  operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
+  // operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
   // L2 Pos
-  operatorXboxController.b().onTrue(new ElevatorPosition(m_elevator, 0));
- // L3 Pos
-  operatorXboxController.x().onTrue(new ElevatorPosition(m_elevator, 0));
- // L4 Pos
-  operatorXboxController.y().onTrue(new ElevatorPosition(m_elevator, 0));
+//   operatorXboxController.b().onTrue(new ElevatorPosition(m_elevator, 0));
+//  // L3 Pos
+//   operatorXboxController.x().onTrue(new ElevatorPosition(m_elevator, 0));
+//  // L4 Pos
+//   operatorXboxController.y().onTrue(new ElevatorPosition(m_elevator, 0));
  // Runs intake for Algae in 
   operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(1), m_algaeIntake))
-  .onFalse(new RunCommand(() -> m_algaeIntake.runAlgae(0), m_algaeIntake));
+  .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
 // Runs intake for Algae out 
   operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(-1), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
-// Runs the intake for Coral in 
-  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_coralIntake.runCoral(1), m_coralIntake))
-  .onFalse(new RunCommand(() -> m_coralIntake.coralStop(), m_coralIntake));
+  //Runs algae arm in
+  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(-0.1), m_algaeIntake))
+  .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
+  //Runs algae arm out
+  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(0.1), m_algaeIntake))
+  .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
+// Runs the intake for Coral in
+   operatorXboxController.x().whileTrue(new RunCommand(() -> m_coralIntake.run(1), m_coralIntake))
+  .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
 // Runs the intake for Coral out 
-  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_coralIntake.runCoral(-1), m_coralIntake))
-  .onFalse(new RunCommand(() -> m_coralIntake.runCoral(0), m_coralIntake));
+  operatorXboxController.b().whileTrue(new RunCommand(() -> m_coralIntake.run(-1), m_coralIntake))
+  .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
+  //Runs wrist up
+  operatorXboxController.y().whileTrue(new RunCommand(() -> m_wrist.run(0.1), m_wrist))
+  .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
+  //Runs wrist down
+  operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.1), m_wrist))
+  .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
+  //Run elevator up
+  operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(0.1), m_elevator))
+  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
+  //Run elevator down
+  operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(-0.1), m_elevator))
+  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
 // Runs the Climber to go up 
-  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(1), m_climber))
-  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
+  // driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(1), m_climber))
+  // .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
 // Runs the Climber to go down
-  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(-1), m_climber))
-  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
+  // driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(-1), m_climber))
+  // .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
 // buttons for Limelight need to convert later to 2025 version
 //   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive
 // .withVelocityX(-LimelightHelpers.getTX("limelight-thehulk") * 0.1) // Drive forward with

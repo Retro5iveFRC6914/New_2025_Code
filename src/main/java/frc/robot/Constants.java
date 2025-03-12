@@ -28,9 +28,9 @@ public final class Constants {
             
     }
     public static final class ElevatorConstants {
-        public static final int kLeftID = 14;
-        public static final int kRightID = 15;
-        public static final int kEncoderID = 16;
+        public static final int kLeftID = 9;
+        public static final int kRightID = 10;
+        public static final int kCANCoderID = 15;
        
     
         //these 2 should be the same
@@ -97,10 +97,10 @@ public static final class DriverConstants {
 
 }
  public static final class IntakeConstants {
-            public static final int kLeftID = 17;
-            public static final int kRightID = 0;
-            public static final int kCoralID = 1;
-            public static final int kCoralArmID = 2;
+            public static final int kAlgaeID = 11;
+            public static final int kAlgaeArmID = 12;
+            public static final int kCoralWristID = 13;
+            public static final int kCoralIntakeID = 14;
             public static final double kIntakeSpeed = 0.4;
             public static final double kFeedSpeed = 3083;
             public static final double kReverseSpeed = 1;

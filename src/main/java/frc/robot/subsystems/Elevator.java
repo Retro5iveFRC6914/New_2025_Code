@@ -121,6 +121,10 @@ public class Elevator extends SubsystemBase {
 public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
+
+public void stop() {
+  leftMotor.set(0);
+}
 public double getPos() {
   // return throughBore.get();
   return encoder.getPosition().getValueAsDouble();

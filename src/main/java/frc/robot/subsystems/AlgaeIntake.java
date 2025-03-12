@@ -22,18 +22,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class AlgaeIntake extends SubsystemBase {
-    private SparkMax leftAlgaeMotor;
-    private SparkMax rightAlgaeMotor;
-    private SparkMaxConfig leftAlgaeConfig;
-    private SparkMaxConfig rightAlgaeConfig;
-    private RelativeEncoder encoder;
-    private DigitalInput limitSwitch;
-    SparkClosedLoopController m_controller = leftAlgaeMotor.getClosedLoopController();
+    private SparkMax algaeMotor;
+    private SparkMax armMotor;
+    private SparkMaxConfig algaeConfig;
+    private SparkMaxConfig armConfig;
 
-    public AlgaeIntake(int leftID, int rightID, int coralID) {
+    public AlgaeIntake(int algaeID, int armID) {
 
-        leftAlgaeMotor = new SparkMax(leftID, MotorType.kBrushless);
-        rightAlgaeMotor = new SparkMax(rightID, MotorType.kBrushless);
+        algaeMotor = new SparkMax(algaeID, MotorType.kBrushless);
+        armMotor = new SparkMax(armID, MotorType.kBrushless);
         // leftAlgaeMotor.restoreFactoryDefaults();
         // rightAlgaeMotor.restoreFactoryDefaults();
 
@@ -41,7 +38,7 @@ public class AlgaeIntake extends SubsystemBase {
 
         // leftAlgaeMotor.restoreFactoryDefaults();
         // rightAlgaeMotor.restoreFactoryDefaults();
-        leftAlgaeConfig
+        algaeConfig
         .inverted(false)
         .smartCurrentLimit(40)
         .voltageCompensation(12.6)
@@ -52,28 +49,34 @@ public class AlgaeIntake extends SubsystemBase {
     //  .i(0)
     //  .d(0)
     //  .outputRange(0, 1);
-        leftAlgaeMotor.configure(leftAlgaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        algaeMotor.configure(algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        rightAlgaeConfig
-        .apply(leftAlgaeConfig)
-        .follow(leftID)
+        armConfig
+        .apply(algaeConfig)
+        .smartCurrentLimit(140)
         .inverted(true);
-        rightAlgaeMotor.configure(rightAlgaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        armMotor.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
        
     }
 
 public void runAlgae(double speed) {
-leftAlgaeMotor.set(speed);
+algaeMotor.set(speed);
 }
 // public void elevatorToPosition(double setPoint) {
 // // Set the setpoint of the PID controller in raw position mode
 // m_controller.setReference(setPoint, ControlType.kPosition);
 // }
 public void algaeStop() {
-leftAlgaeMotor.set(0);
+algaeMotor.set(0);
+}
+public void runArm(double setpoint) {
+armMotor.set(setpoint);
 }
 
+public void stopArm() {
+    armMotor.set(0);
+    }
 
 @Override
 public void periodic() {}
