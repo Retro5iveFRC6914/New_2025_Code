@@ -40,7 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-
+import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.ElevatorPosition;
 
@@ -54,7 +54,7 @@ public class RobotContainer {
   // The robot's subsystems
   public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kCANCoderID);
   public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kAlgaeID, IntakeConstants.kAlgaeArmID);
-  // public final Climber m_climber = new Climber(ClimberConstants.kLeftID, ClimberConstants.kRightID);
+  public final Climber m_climber = new Climber(ClimberConstants.kLeftID);
   public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralIntakeID);
   public final Wrist m_wrist = new Wrist(IntakeConstants.kCoralWristID);
 
@@ -144,12 +144,12 @@ public class RobotContainer {
   //Run elevator down
   operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(-0.1), m_elevator))
   .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
-// Runs the Climber to go up 
-  // driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(1), m_climber))
-  // .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
-// Runs the Climber to go down
-  // driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.runClimber(-1), m_climber))
-  // .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
+// Runs the Cam to go out 
+  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
+// Runs the Cam to go in
+  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
 // buttons for Limelight need to convert later to 2025 version
 //   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive
 // .withVelocityX(-LimelightHelpers.getTX("limelight-thehulk") * 0.1) // Drive forward with
