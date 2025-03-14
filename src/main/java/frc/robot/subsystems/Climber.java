@@ -59,7 +59,7 @@ public class Climber extends SubsystemBase {
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
-    private final CurrentLimitsConfigs m_currentLimits = new CurrentLimitsConfigs();
+    // private final CurrentLimitsConfigs m_currentLimits = new CurrentLimitsConfigs();
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
 
     public Climber(int climberID) {
@@ -71,10 +71,10 @@ public class Climber extends SubsystemBase {
     climberConfigurator.apply(new TalonFXConfiguration());
     //declares new cancoder       
     // creates current limit for motors
-    m_currentLimits.SupplyCurrentLimit = 140;
-    TalonFXConfigs.CurrentLimits = m_currentLimits;
-    //set current limit for left motor
-    climberConfigurator.apply(m_currentLimits); 
+    // m_currentLimits.SupplyCurrentLimit = 140;
+    // TalonFXConfigs.CurrentLimits = m_currentLimits;
+    // //set current limit for left motor
+    // climberConfigurator.apply(m_currentLimits); 
     //set current limit for right motor
     //inverts one motor to create rotation
     climberConfigurator.apply(TalonFXConfigs);

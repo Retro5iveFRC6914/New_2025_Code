@@ -39,17 +39,16 @@ public class AlgaeIntake extends SubsystemBase {
     private final TalonFX intake;
     private final TalonFX arm;
     //Creates CANcoder object for the CANcoder encoder
-    private Encoder throughBore;
     // private final DigitalInput optical;
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
     // private final CANcoder encoder;
-    public AlgaeIntake(int algaeID, int intakeID/* , int CANcoderID*/) {
+    public AlgaeIntake(int algaeID, int armID/* , int CANcoderID*/) {
 //declares the motors as motors with the ID's from the arguments
     intake = new TalonFX(algaeID);
-    arm = new TalonFX(intakeID);
+    arm = new TalonFX(armID);
     //throughBore = new Encoder(1,2);
     // encoder = new CANcoder(CANcoderID);
     // optical = new DigitalInput(3);

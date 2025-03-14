@@ -85,10 +85,10 @@ public class RobotContainer {
     // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
     // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
   // elevator levels 
-    NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
-    NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, 0).withTimeout(2));
-    NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
-    NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
+    // NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
    // stuff to grab and score coral
     NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
     NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
@@ -120,8 +120,8 @@ public class RobotContainer {
             drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driverXboxController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driverXboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityX(driverXboxController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(driverXboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-driverXboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -143,10 +143,10 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 // Runs the Cam to go out 
-  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.1), m_climber))
+  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
 // Runs the Cam to go in
-  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.1), m_climber))
+  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
 // L1 Pos
   // operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
@@ -163,10 +163,10 @@ public class RobotContainer {
   operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(-1), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
   //Runs algae arm in
-  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(-0.1), m_algaeIntake))
+  operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(-0.2), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
   //Runs algae arm out
-  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(0.1), m_algaeIntake))
+  operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(0.2), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
 // Runs the intake for Coral in
    operatorXboxController.x().whileTrue(new RunCommand(() -> m_coralIntake.run(1), m_coralIntake))
@@ -181,10 +181,10 @@ public class RobotContainer {
   operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.1), m_wrist))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
   //Run elevator up
-  operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(0.1), m_elevator))
+  operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(-0.5), m_elevator))
   .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
   //Run elevator down
-  operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(-0.1), m_elevator))
+  operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(0.5), m_elevator))
   .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
 
 // buttons for Limelight need to convert later to 2025 version

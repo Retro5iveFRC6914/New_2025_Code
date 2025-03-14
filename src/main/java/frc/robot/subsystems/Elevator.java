@@ -63,13 +63,15 @@ public class Elevator extends SubsystemBase {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     //Creates CANcoder object for the CANcoder encoder
-    private Encoder throughBore;
+    // private Encoder throughBore;
     // private final DigitalInput optical;
     //Creates MotorOutputConfigs object, and resets motor output configs
-    private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
+    private final MotorOutputConfigs m_rightMotorOutputConfigs = new MotorOutputConfigs();
+    private final MotorOutputConfigs m_leftMotorOutputConfigs = new MotorOutputConfigs();
+
     //Creates CurrentLimitsConfigs object, and resets current limits configs
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
-    final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+    // final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     // private final CANcoder encoder;
     private final FeedbackConfigs feedback;
     public Elevator(int leftID, int rightID/* , int CANcoderID*/) {
@@ -88,9 +90,12 @@ public class Elevator extends SubsystemBase {
 
     rightMotor.getConfigurator().apply(elevatorConfig);
     //INVERTS ONE MOTOR
-    m_MotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
-    //leftMotor.setInverted(false);
-    rightMotor.getConfigurator().apply(m_MotorOutputConfigs);
+    m_rightMotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
+    //leftMotor.setInverted(false);    
+    rightMotor.getConfigurator().apply(m_rightMotorOutputConfigs);
+    //invert left motor to clockwise positive
+    m_leftMotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive);
+    leftMotor.getConfigurator().apply(m_leftMotorOutputConfigs);
     //sets to brake mode
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
     rightMotor.setNeutralMode(NeutralModeValue.Brake); 
@@ -99,25 +104,24 @@ public class Elevator extends SubsystemBase {
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
     // elevatorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
     // elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
-    elevatorConfig.Feedback.RotorToSensorRatio = 15;
-    leftMotor.getConfigurator().apply(elevatorConfig);
+    // elevatorConfig.Feedback.RotorToSensorRatio = 15;
     // creates PID values for motor (hopefully)
-    var slot0Configs = new Slot0Configs();
-    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
-    slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    slot0Configs.kG = ElevatorConstants.kG;
-    slot0Configs.kS = ElevatorConstants.kS;
-    slot0Configs.kV = ElevatorConstants.kV;
-    slot0Configs.kA = ElevatorConstants.kA;
-    slot0Configs.kP = ElevatorConstants.kP;
-    slot0Configs.kI = ElevatorConstants.kI;
-    slot0Configs.kD = ElevatorConstants.kD;
+    // var slot0Configs = new Slot0Configs();
+    // slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
+    // slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    // slot0Configs.kG = ElevatorConstants.kG;
+    // slot0Configs.kS = ElevatorConstants.kS;
+    // slot0Configs.kV = ElevatorConstants.kV;
+    // slot0Configs.kA = ElevatorConstants.kA;
+    // slot0Configs.kP = ElevatorConstants.kP;
+    // slot0Configs.kI = ElevatorConstants.kI;
+    // slot0Configs.kD = ElevatorConstants.kD;
    //m_voltagePosition.Slot = 0;
-    leftMotor.getConfigurator().apply(slot0Configs);
+    // leftMotor.getConfigurator().apply(slot0Configs);
   }
-  public void runToPosition(double setpoint) {
-    leftMotor.setControl(m_request.withPosition(setpoint));
-}
+//   public void runToPosition(double setpoint) {
+//     leftMotor.setControl(m_request.withPosition(setpoint));
+// }
 public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
