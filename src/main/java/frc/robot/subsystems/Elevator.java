@@ -64,21 +64,21 @@ public class Elevator extends SubsystemBase {
     private final TalonFX rightMotor;
     //Creates CANcoder object for the CANcoder encoder
     private Encoder throughBore;
-    private final DigitalInput optical;
+    // private final DigitalInput optical;
     //Creates MotorOutputConfigs object, and resets motor output configs
     private final MotorOutputConfigs m_MotorOutputConfigs = new MotorOutputConfigs();
     //Creates CurrentLimitsConfigs object, and resets current limits configs
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-    private final CANcoder encoder;
+    // private final CANcoder encoder;
     private final FeedbackConfigs feedback;
-    public Elevator(int leftID, int rightID, int CANcoderID) {
+    public Elevator(int leftID, int rightID/* , int CANcoderID*/) {
 //declares the motors as motors with the ID's from the arguments
     leftMotor = new TalonFX(leftID);
     rightMotor = new TalonFX(rightID);
     //throughBore = new Encoder(1,2);
-    encoder = new CANcoder(CANcoderID);
-    optical = new DigitalInput(3);
+    // encoder = new CANcoder(CANcoderID);
+    // optical = new DigitalInput(3);
     TalonFXConfiguration elevatorConfig = new TalonFXConfiguration();
     feedback = new FeedbackConfigs();
    // creates current limit for motors
@@ -97,8 +97,8 @@ public class Elevator extends SubsystemBase {
 /* User can change the configs if they want, or leave it empty for factory-default */
    // strict followers ignore the leader's invert and use their own
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
-    elevatorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-    elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+    // elevatorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+    // elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
     elevatorConfig.Feedback.RotorToSensorRatio = 15;
     leftMotor.getConfigurator().apply(elevatorConfig);
     // creates PID values for motor (hopefully)
@@ -125,20 +125,20 @@ public void run(double setpoint) {
 public void stop() {
   leftMotor.set(0);
 }
-public double getPos() {
-  // return throughBore.get();
-  return encoder.getPosition().getValueAsDouble();
-}
-public boolean getOptical() {
-  return !optical.get();
-}
+// public double getPos() {
+//   // return throughBore.get();
+//   return encoder.getPosition().getValueAsDouble();
+// }
+// public boolean getOptical() {
+//   return !optical.get();
+// }
   @Override
   public void periodic() {
    /*  if(getOptical() == true) {
       throughBore.reset();
     } */
-    SmartDashboard.putBoolean("Zero Sensor", getOptical());
-    SmartDashboard.putNumber("Elevator Position", getPos());
+    // SmartDashboard.putBoolean("Zero Sensor", getOptical());
+    // SmartDashboard.putNumber("Elevator Position", getPos());
 
   }
 }

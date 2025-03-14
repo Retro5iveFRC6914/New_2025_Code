@@ -97,10 +97,10 @@ public static final class DriverConstants {
 
 }
  public static final class IntakeConstants {
-            public static final int kAlgaeID = 11;
-            public static final int kAlgaeArmID = 12;
-            public static final int kCoralWristID = 13;
-            public static final int kCoralIntakeID = 14;
+            public static final int kAlgaeID = 14;
+            public static final int kAlgaeArmID = 15;
+            public static final int kCoralWristID = 12;
+            public static final int kCoralIntakeID = 11;
             public static final double kIntakeSpeed = 0.4;
             public static final double kFeedSpeed = 3083;
             public static final double kReverseSpeed = 1;

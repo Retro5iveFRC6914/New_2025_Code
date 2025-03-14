@@ -5,6 +5,9 @@
 package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,11 +26,6 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Wrist;
-import frc.robot.subsystems.CoralIntake;
-import frc.robot.subsystems.AlgaeIntake;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -42,8 +40,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.commands.ElevatorPosition;
-
+import frc.robot.generated.TunerConstants;
   /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -51,13 +48,27 @@ import frc.robot.commands.ElevatorPosition;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID, ElevatorConstants.kCANCoderID);
-  public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kAlgaeID, IntakeConstants.kAlgaeArmID);
-  public final Climber m_climber = new Climber(ClimberConstants.kLeftID);
-  public final CoralIntake m_coralIntake = new CoralIntake(IntakeConstants.kCoralIntakeID);
-  public final Wrist m_wrist = new Wrist(IntakeConstants.kCoralWristID);
+  
 
+  // The robot's subsystems
+  public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID/* , ElevatorConstants.kCANCoderID*/);
+  public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kAlgaeID, IntakeConstants.kAlgaeArmID);
+  public final Climber m_climber = new Climber(11);
+  public final CoralIntake m_coralIntake = new CoralIntake(13);
+  public final Wrist m_wrist = new Wrist(IntakeConstants.kCoralWristID);
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+
+  /* Setting up bindings for necessary control of the swerve drive platform */
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+          .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+  private final Telemetry logger = new Telemetry(MaxSpeed);
   /* Controllers */
 
     // The driver's controller
@@ -82,8 +93,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
     NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
 // stuff to grab and score algae 
-    NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_algaeIntake, 1).withTimeout(1.5));
-    NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_algaeIntake, -1).withTimeout(1.5));
+    // NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_algaeIntake, 1).withTimeout(1.5));
+    // NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_algaeIntake, -1).withTimeout(1.5));
 
 
 
@@ -106,6 +117,37 @@ public class RobotContainer {
    * {@link XboxButton}.
    */
   private void configureButtonBindings() {
+            drivetrain.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(-driverXboxController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driverXboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driverXboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            )
+        );
+
+        driverXboxController.b().whileTrue(drivetrain.applyRequest(() -> brake));
+        driverXboxController.leftBumper().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-driverXboxController.getLeftY(), -driverXboxController.getLeftX()))
+        ));
+
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        // driverXboxController.back().and(driverXboxController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driverXboxController.back().and(driverXboxController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driverXboxController.start().and(driverXboxController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driverXboxController.start().and(driverXboxController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+        // reset the field-centric heading on left bumper press
+        driverXboxController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+// Runs the Cam to go out 
+  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
+// Runs the Cam to go in
+  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.1), m_climber))
+  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
 // L1 Pos
   // operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
   // L2 Pos
@@ -144,12 +186,7 @@ public class RobotContainer {
   //Run elevator down
   operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(-0.1), m_elevator))
   .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
-// Runs the Cam to go out 
-  driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.1), m_climber))
-  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
-// Runs the Cam to go in
-  driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.1), m_climber))
-  .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
+
 // buttons for Limelight need to convert later to 2025 version
 //   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive
 // .withVelocityX(-LimelightHelpers.getTX("limelight-thehulk") * 0.1) // Drive forward with

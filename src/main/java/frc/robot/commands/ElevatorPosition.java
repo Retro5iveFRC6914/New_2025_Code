@@ -42,9 +42,10 @@ public class ElevatorPosition extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if ((MathUtil.isNear(setpoint, elevator.getPos(), 0.01))||(elevator.getPos() >= 1)||(elevator.getPos() <= -1)||(elevator.getOptical()==true)) {
-      return true;
-    } else {
+    // if ((MathUtil.isNear(setpoint, elevator.getPos(), 0.01))||(elevator.getPos() >= 1)||(elevator.getPos() <= -1)||(elevator.getOptical()==true)) {
+    //   return true;
+    // } else {
       return false;
-    }  }
+    }  
+    //}
 }
