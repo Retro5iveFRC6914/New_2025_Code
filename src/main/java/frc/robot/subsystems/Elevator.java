@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
 
     //Creates CurrentLimitsConfigs object, and resets current limits configs
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
-    // final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+    final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     // private final CANcoder encoder;
     private final FeedbackConfigs feedback;
     public Elevator(int leftID, int rightID/* , int CANcoderID*/) {
@@ -90,11 +90,11 @@ public class Elevator extends SubsystemBase {
 
     rightMotor.getConfigurator().apply(elevatorConfig);
     //INVERTS ONE MOTOR
-    m_rightMotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
+    m_rightMotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive);
     //leftMotor.setInverted(false);    
     rightMotor.getConfigurator().apply(m_rightMotorOutputConfigs);
     //invert left motor to clockwise positive
-    m_leftMotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive);
+    m_leftMotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
     leftMotor.getConfigurator().apply(m_leftMotorOutputConfigs);
     //sets to brake mode
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -102,26 +102,22 @@ public class Elevator extends SubsystemBase {
 /* User can change the configs if they want, or leave it empty for factory-default */
    // strict followers ignore the leader's invert and use their own
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
-    // elevatorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-    // elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
-    // elevatorConfig.Feedback.RotorToSensorRatio = 15;
+    elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    elevatorConfig.Feedback.SensorToMechanismRatio = 15;
     // creates PID values for motor (hopefully)
-    // var slot0Configs = new Slot0Configs();
-    // slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
     // slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     // slot0Configs.kG = ElevatorConstants.kG;
-    // slot0Configs.kS = ElevatorConstants.kS;
-    // slot0Configs.kV = ElevatorConstants.kV;
-    // slot0Configs.kA = ElevatorConstants.kA;
-    // slot0Configs.kP = ElevatorConstants.kP;
+    slot0Configs.kP = 0.01;
     // slot0Configs.kI = ElevatorConstants.kI;
     // slot0Configs.kD = ElevatorConstants.kD;
-   //m_voltagePosition.Slot = 0;
-    // leftMotor.getConfigurator().apply(slot0Configs);
+  //  m_voltagePosition.Slot = 0;
+    leftMotor.getConfigurator().apply(slot0Configs);
   }
-//   public void runToPosition(double setpoint) {
-//     leftMotor.setControl(m_request.withPosition(setpoint));
-// }
+  public void runToPosition(double setpoint) {
+    leftMotor.setControl(m_request.withPosition(setpoint));
+}
 public void run(double setpoint) {
   leftMotor.set(setpoint);
   }
@@ -129,10 +125,10 @@ public void run(double setpoint) {
 public void stop() {
   leftMotor.set(0);
 }
-// public double getPos() {
-//   // return throughBore.get();
-//   return encoder.getPosition().getValueAsDouble();
-// }
+public double getPos() {
+  // return throughBore.get();
+  return leftMotor.getPosition().getValueAsDouble();
+}
 // public boolean getOptical() {
 //   return !optical.get();
 // }
@@ -142,7 +138,7 @@ public void stop() {
       throughBore.reset();
     } */
     // SmartDashboard.putBoolean("Zero Sensor", getOptical());
-    // SmartDashboard.putNumber("Elevator Position", getPos());
+    SmartDashboard.putNumber("Elevator Position", getPos());
 
   }
 }

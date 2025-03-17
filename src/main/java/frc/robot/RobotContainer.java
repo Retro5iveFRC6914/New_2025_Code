@@ -81,14 +81,13 @@ public class RobotContainer {
 
   public RobotContainer(){
     // Register Named Commands
-        // NamedCommands.registerCommand("intake", intake);
-    // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
-    // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
+
   // elevator levels 
-    // NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
-    // NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, 0).withTimeout(2));
-    // NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, 0).withTimeout(2));
-    // NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, 0).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToZero", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
+    // NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, ElevatorConstants.L1).withTimeout(2)); // add the pos later for all Levels
+    // NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, ElevatorConstants.L2).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, ElevatorConstants.L3).withTimeout(2));
+    // NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
    // stuff to grab and score coral
     NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
     NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
@@ -128,7 +127,7 @@ public class RobotContainer {
 
         driverXboxController.b().whileTrue(drivetrain.applyRequest(() -> brake));
         driverXboxController.leftBumper().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-driverXboxController.getLeftY(), -driverXboxController.getLeftX()))
+            point.withModuleDirection(new Rotation2d(driverXboxController.getLeftY(), driverXboxController.getLeftX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
@@ -142,50 +141,60 @@ public class RobotContainer {
         driverXboxController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
 // Runs the Cam to go out 
   driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
 // Runs the Cam to go in
   driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
+
+//Run elevator up
+  operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(0.5), m_elevator))
+  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
+//Run elevator down
+  operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(-0.5), m_elevator))
+  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
+// Zero Position
+  operatorXboxController.back().and(operatorXboxController.start()).onTrue(new ElevatorPosition(m_elevator, 0).withTimeout(2));
 // L1 Pos
-  // operatorXboxController.a().onTrue(new ElevatorPosition(m_elevator, 0));
-  // L2 Pos
-//   operatorXboxController.b().onTrue(new ElevatorPosition(m_elevator, 0));
-//  // L3 Pos
-//   operatorXboxController.x().onTrue(new ElevatorPosition(m_elevator, 0));
-//  // L4 Pos
-//   operatorXboxController.y().onTrue(new ElevatorPosition(m_elevator, 0));
- // Runs intake for Algae in 
+  operatorXboxController.back().and(operatorXboxController.y()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L1).withTimeout(2));
+// L2 Pos
+ operatorXboxController.back().and(operatorXboxController.b()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L2).withTimeout(2));
+// L3 Pos
+ operatorXboxController.back().and(operatorXboxController.a()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L3).withTimeout(2));
+// L4 Pos
+  operatorXboxController.back().and(operatorXboxController.x()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
+// Cancel elevator
+  operatorXboxController.povLeft().whileTrue(new RunCommand(()-> m_elevator.stop(), m_elevator));
+
+// Runs intake for Algae in 
   operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(1), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
 // Runs intake for Algae out 
   operatorXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(-1), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
-  //Runs algae arm in
+//Runs algae arm in
   operatorXboxController.leftBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(-0.2), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
-  //Runs algae arm out
+//Runs algae arm out
   operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(0.2), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
+
 // Runs the intake for Coral in
    operatorXboxController.x().whileTrue(new RunCommand(() -> m_coralIntake.run(1), m_coralIntake))
   .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
 // Runs the intake for Coral out 
   operatorXboxController.b().whileTrue(new RunCommand(() -> m_coralIntake.run(-1), m_coralIntake))
   .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
-  //Runs wrist up
-  operatorXboxController.y().whileTrue(new RunCommand(() -> m_wrist.run(0.1), m_wrist))
+  
+//Runs wrist up
+  operatorXboxController.y().whileTrue(new RunCommand(() -> m_wrist.run(0.3), m_wrist))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
-  //Runs wrist down
-  operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.1), m_wrist))
+//Runs wrist down
+  operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.3), m_wrist))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
-  //Run elevator up
-  operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(-0.5), m_elevator))
-  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
-  //Run elevator down
-  operatorXboxController.povDown().whileTrue(new RunCommand(() -> m_elevator.run(0.5), m_elevator))
-  .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
+
 
 // buttons for Limelight need to convert later to 2025 version
 //   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive

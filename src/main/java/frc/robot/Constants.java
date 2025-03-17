@@ -34,29 +34,20 @@ public final class Constants {
        
     
         //these 2 should be the same
-        public static final double kIntakePos = 0.06;
-        public static final double kAutoSpeakerPos = 0.065;
-        public static final double kTeleOpSpeakerPos = 0.0625;
-        public static final double kFrontAmpPos = 0.15;
+        public static final double L1 = 0;
+        public static final double L2 = 0;
+        public static final double L3 = 0;
+        public static final double L4 = 0;
     
         // 3m position
        
-        public static final double kG = 0; //TODO changed this
-        public static final double kS = 0; //TODO changed this 
-        public static final double kV = 0; //TODO changed this 
-        public static final double kA = 0; //TODO changed this 
-
-        public static final double kP = 0; //TODO changed this 
-        public static final double kI = 0; //TODO changed this
-        public static final double kD = 0;  //TODO changed this
-        public static final double kIz = 0; //TODO changed this 
-        public static final double kFF = 0; //TODO changed this 
+        
         public static final double kMaxOutput = 0.7; 
         public static final double kMinOutput = -0.7;
         public static final double kMaxAccel = 0.18;
         public static final double kMaxVel = 0.85;
     
-        public static final double kTolearance = 0.002;
+        public static final double kTolerance = 0.002;
         public static final double kManualSpeed = 0.3;
 
 //*  shooter constants
