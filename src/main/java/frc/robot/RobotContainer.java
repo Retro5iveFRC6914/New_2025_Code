@@ -194,6 +194,10 @@ public class RobotContainer {
 //Runs wrist down
   operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.3), m_wrist))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
+//Runs wrist to grab position
+  operatorXboxController.back().and(operatorXboxController.povLeft()).onTrue(new WristPosition(m_wrist, 0));
+//Runs wrist to score position
+operatorXboxController.back().and(operatorXboxController.povRight()).onTrue(new WristPosition(m_wrist, 0));
 
 
 // buttons for Limelight need to convert later to 2025 version
