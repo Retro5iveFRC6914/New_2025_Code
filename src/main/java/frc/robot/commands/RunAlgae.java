@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlgaeIntake;
 
@@ -13,7 +13,7 @@ public class RunAlgae extends Command {
   /** Creates a new RunAlgae. */
    private final AlgaeIntake intaker;
   private double setpoint;
-  private boolean end;
+  // private boolean end;
   public RunAlgae(AlgaeIntake intake, double speed) {
     intaker = intake;
     setpoint = speed; 
@@ -24,7 +24,7 @@ public class RunAlgae extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    end = false; 
+    // end = false; 
   }
 
   // Called every time the scheduler runs while the command is scheduled.

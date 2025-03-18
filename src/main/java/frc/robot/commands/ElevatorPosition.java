@@ -12,7 +12,7 @@ public class ElevatorPosition extends Command {
   /** Creates a new Climber_up. */
   private final Elevator elevator;
   private double setpoint;
-  private boolean end;
+  // private boolean end;
   public ElevatorPosition(Elevator elevate, double target) {
     // Use addRequirements() here to declare subsystem dependencies.
     elevator = elevate;
@@ -24,7 +24,7 @@ public class ElevatorPosition extends Command {
   @Override
   public void initialize() {
   
-    end = false;
+    // end = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -12,7 +12,7 @@ public class RunCoral extends Command {
   /** Creates a new RunAlgae. */
    private final CoralIntake intaker;
   private double setpoint;
-  private boolean end;
+  // private boolean end;
   public RunCoral(CoralIntake intake, double speed) {
     intaker = intake;
     setpoint = speed; 
@@ -23,7 +23,7 @@ public class RunCoral extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    end = false; 
+    // end = false; 
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -6,34 +6,34 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import com.revrobotics.AbsoluteEncoder;
+// import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+// import com.revrobotics.AbsoluteEncoder;
 
-import javax.swing.text.Position;
+// import javax.swing.text.Position;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
+// import com.ctre.phoenix6.StatusCode;
+// import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.NeutralOut;
+// import com.ctre.phoenix6.controls.Follower;
+// import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StrictFollower;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
+// import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+// import com.ctre.phoenix6.controls.VelocityVoltage;
+// import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
+// import com.ctre.phoenix6.hardware.CANcoder;
+// import com.ctre.phoenix6.configs.CANcoderConfiguration;
+// import com.ctre.phoenix6.configs.CANcoderConfigurator;
+// import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
+// import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+// import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.DutyCycleOut;
+// import com.ctre.phoenix6.controls.DutyCycleOut;
 
 /*import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -43,18 +43,18 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;*/
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+// import edu.wpi.first.math.controller.PIDController;
+// import edu.wpi.first.math.controller.ProfiledPIDController;
+// import edu.wpi.first.math.trajectory.TrapezoidProfile;
+// import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.wpilibj.DutyCycleEncoder;
+// import edu.wpi.first.wpilibj.Encoder;
+// import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
+// import frc.robot.Constants.ElevatorConstants;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class Elevator extends SubsystemBase {
@@ -73,7 +73,7 @@ public class Elevator extends SubsystemBase {
    // private final DutyCycleOut m_output = new DutyCycleOut(0);
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     // private final CANcoder encoder;
-    private final FeedbackConfigs feedback;
+    // private final FeedbackConfigs feedback;
     public Elevator(int leftID, int rightID/* , int CANcoderID*/) {
 //declares the motors as motors with the ID's from the arguments
     leftMotor = new TalonFX(leftID);
@@ -82,7 +82,7 @@ public class Elevator extends SubsystemBase {
     // encoder = new CANcoder(CANcoderID);
     // optical = new DigitalInput(3);
     TalonFXConfiguration elevatorConfig = new TalonFXConfiguration();
-    feedback = new FeedbackConfigs();
+    // feedback = new FeedbackConfigs();
    // creates current limit for motors
     elevatorConfig.CurrentLimits.withSupplyCurrentLimit(140);
 

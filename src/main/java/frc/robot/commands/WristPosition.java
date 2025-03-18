@@ -13,7 +13,7 @@ public class WristPosition extends Command {
   /** Creates a new WristPosition. */
   private Wrist wrist;
   private double target;
-  private boolean end;
+  // private boolean end;
   public WristPosition(Wrist ctreWrist, double setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     wrist = ctreWrist;
@@ -23,7 +23,7 @@ public class WristPosition extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    end = false;
+    // end = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
