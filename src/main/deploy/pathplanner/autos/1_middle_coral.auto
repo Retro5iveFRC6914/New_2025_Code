@@ -9,6 +9,24 @@
           "data": {
             "pathName": "1_middle_coral_s1"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "elevatorToL3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wristToScore"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoral"
+          }
         }
       ]
     }

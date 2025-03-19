@@ -41,7 +41,7 @@ public class WristPosition extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-     if ((MathUtil.isNear(target, wrist.getPos(), 0.01))||(wrist.getPos() >= 1)||(wrist.getPos() <= -1)) {
+     if ((MathUtil.isNear(target, wrist.getPos(), 0.005))||(wrist.getPos() >= 0.46)||(wrist.getPos() <= -0.001)) {
       return true;
     } else {
       return false;

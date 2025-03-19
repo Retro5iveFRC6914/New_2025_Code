@@ -11,15 +11,57 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "wristToScore"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 15.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wristDpwn"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "2_left_coral_s2"
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "grabCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "2_left_coral_s3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wristToScore"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoral"
           }
         }
       ]

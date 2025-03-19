@@ -22,22 +22,21 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.OperatorConstants;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+// import frc.robot.Constants.OIConstants;
+// import frc.robot.Constants.OperatorConstants;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.InstantCommand;
+// import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
+// import com.pathplanner.lib.commands.PathPlannerAuto;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
@@ -83,14 +82,16 @@ public class RobotContainer {
     // Register Named Commands
 
   // elevator levels 
-    // NamedCommands.registerCommand("elevatorToZero", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
-    // NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, ElevatorConstants.L1).withTimeout(2)); // add the pos later for all Levels
-    // NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, ElevatorConstants.L2).withTimeout(2));
-    // NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, ElevatorConstants.L3).withTimeout(2));
-    // NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
+    NamedCommands.registerCommand("elevatorToZero", new ElevatorPosition(m_elevator, 0).withTimeout(2)); // add the pos later for all Levels
+    NamedCommands.registerCommand("elevatorToL1", new ElevatorPosition(m_elevator, ElevatorConstants.L1).withTimeout(2)); // add the pos later for all Levels
+    NamedCommands.registerCommand("elevatorToL2", new ElevatorPosition(m_elevator, ElevatorConstants.L2).withTimeout(2));
+    NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, ElevatorConstants.L3).withTimeout(2));
+    NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
    // stuff to grab and score coral
     NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
     NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
+    NamedCommands.registerCommand("wristToScore", new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(3));
+    NamedCommands.registerCommand("wristToGrab", new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(1.5));
 // stuff to grab and score algae 
     // NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_algaeIntake, 1).withTimeout(1.5));
     // NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_algaeIntake, -1).withTimeout(1.5));
@@ -158,7 +159,7 @@ public class RobotContainer {
 // Zero Position
   operatorXboxController.back().and(operatorXboxController.start()).onTrue(new ElevatorPosition(m_elevator, 0).withTimeout(2));
 // L1 Pos
-  operatorXboxController.back().and(operatorXboxController.y()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L1).withTimeout(2));
+  operatorXboxController.back().and(operatorXboxController.y()).onTrue(new ElevatorPosition(m_elevator, 4.6).withTimeout(2));
 // L2 Pos
  operatorXboxController.back().and(operatorXboxController.b()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L2).withTimeout(2));
 // L3 Pos
@@ -167,6 +168,8 @@ public class RobotContainer {
   operatorXboxController.back().and(operatorXboxController.x()).onTrue(new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
 // Cancel elevator
   operatorXboxController.povLeft().whileTrue(new RunCommand(()-> m_elevator.stop(), m_elevator));
+//Set zero of elevator
+  operatorXboxController.leftStick().onTrue(new RunCommand(()-> m_elevator.zeroPosition(), m_elevator));
 
 // Runs intake for Algae in 
   operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(1), m_algaeIntake))
@@ -188,26 +191,17 @@ public class RobotContainer {
   operatorXboxController.b().whileTrue(new RunCommand(() -> m_coralIntake.run(-1), m_coralIntake))
   .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
   
-//Runs wrist up
-  operatorXboxController.y().whileTrue(new RunCommand(() -> m_wrist.run(0.3), m_wrist))
-  .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
 //Runs wrist down
-  operatorXboxController.a().whileTrue(new RunCommand(() -> m_wrist.run(-0.3), m_wrist))
+  operatorXboxController.a().whileTrue(new RunWrist(m_wrist, 0.3))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
+//Runs wrist up
+  operatorXboxController.y().whileTrue(new RunWrist(m_wrist, -0.3))
+  .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
+
 //Runs wrist to grab position
-  operatorXboxController.back().and(operatorXboxController.povLeft()).onTrue(new WristPosition(m_wrist, 0));
+  operatorXboxController.back().and(operatorXboxController.povLeft()).onTrue(new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(3));
 //Runs wrist to score position
-operatorXboxController.back().and(operatorXboxController.povRight()).onTrue(new WristPosition(m_wrist, 0));
-
-
-// buttons for Limelight need to convert later to 2025 version
-//   driverXboxController.a().whileTrue(drivetrain.applyRequest(() -> drive
-// .withVelocityX(-LimelightHelpers.getTX("limelight-thehulk") * 0.1) // Drive forward with
-// // negative Y (forward)
-// .withVelocityY(-LimelightHelpers.getTY("limelight-thehulk") * 0.1) // Drive left with negative X (left)
-// .withRotationalRate(-LimelightHelpers.getTA("limelight-thehulk") * 0.1) // Drive counterclockwise with negative X (left)
-// ));
-
+operatorXboxController.back().and(operatorXboxController.povRight()).onTrue(new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(3));
 }
     
   public Command getAutonomousCommand() {

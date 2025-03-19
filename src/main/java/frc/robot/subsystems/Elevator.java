@@ -6,7 +6,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-// import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 // import com.revrobotics.AbsoluteEncoder;
 
 // import javax.swing.text.Position;
@@ -89,31 +89,34 @@ public class Elevator extends SubsystemBase {
     leftMotor.getConfigurator().apply(elevatorConfig);
 
     rightMotor.getConfigurator().apply(elevatorConfig);
-    //INVERTS ONE MOTOR
-    m_rightMotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive);
-    //leftMotor.setInverted(false);    
-    rightMotor.getConfigurator().apply(m_rightMotorOutputConfigs);
-    //invert left motor to clockwise positive
-    m_leftMotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
-    leftMotor.getConfigurator().apply(m_leftMotorOutputConfigs);
+
     //sets to brake mode
-    leftMotor.setNeutralMode(NeutralModeValue.Brake);
-    rightMotor.setNeutralMode(NeutralModeValue.Brake); 
 /* User can change the configs if they want, or leave it empty for factory-default */
    // strict followers ignore the leader's invert and use their own
     rightMotor.setControl(new StrictFollower(leftMotor.getDeviceID()));
     elevatorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     elevatorConfig.Feedback.SensorToMechanismRatio = 15;
     // creates PID values for motor (hopefully)
-    var slot0Configs = new Slot0Configs();
-    slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
-    // slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    elevatorConfig.Slot0.withGravityType(GravityTypeValue.Elevator_Static);
+    elevatorConfig.Slot0.withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // slot0Configs.kG = ElevatorConstants.kG;
-    slot0Configs.kP = 0.01;
+    elevatorConfig.Slot0.kP = 0.07;
     // slot0Configs.kI = ElevatorConstants.kI;
     // slot0Configs.kD = ElevatorConstants.kD;
   //  m_voltagePosition.Slot = 0;
-    leftMotor.getConfigurator().apply(slot0Configs);
+    leftMotor.getConfigurator().apply(elevatorConfig);
+    rightMotor.getConfigurator().apply(elevatorConfig);
+        //INVERTS ONE MOTOR
+        m_rightMotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive);
+        m_rightMotorOutputConfigs.withNeutralMode(NeutralModeValue.Brake);
+        //leftMotor.setInverted(false);    
+        rightMotor.getConfigurator().apply(m_rightMotorOutputConfigs);
+        //invert left motor to clockwise positive
+        m_leftMotorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive);
+        m_leftMotorOutputConfigs.withNeutralMode(NeutralModeValue.Brake);
+
+        leftMotor.getConfigurator().apply(m_leftMotorOutputConfigs);
+    leftMotor.setPosition(0);
   }
   public void runToPosition(double setpoint) {
     leftMotor.setControl(m_request.withPosition(setpoint));
@@ -124,6 +127,9 @@ public void run(double setpoint) {
 
 public void stop() {
   leftMotor.set(0);
+}
+public void zeroPosition() {
+  leftMotor.setPosition(0);
 }
 public double getPos() {
   // return throughBore.get();

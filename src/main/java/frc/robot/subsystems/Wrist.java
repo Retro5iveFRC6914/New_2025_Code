@@ -64,17 +64,19 @@ public class Wrist extends SubsystemBase {
     // Sets the wrist to be counter clockwise positive
     wristConfigure.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
     // Makes the motor into brake mode
-    wrist.setNeutralMode(NeutralModeValue.Brake); 
+    wristConfigure.MotorOutput.withNeutralMode(NeutralModeValue.Brake); 
     // Sets the motor's gravity type to an arm type
     //wristConfigure.ExternalFeedback.withRotorToSensorRatio();
     wristConfigure.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
     wristConfigure.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
+    wristConfigure.Feedback.withSensorToMechanismRatio(125);
     // PID values for the wrist motor
-    wristConfigure.Slot0.kP = 0;
+    wristConfigure.Slot0.kP = 20;
     wristConfigure.Slot0.kI = 0;
     wristConfigure.Slot0.kD = 0;
     // Applies the motor's configurations to the motor
     wrist.getConfigurator().apply(wristConfigure);
+    wrist.setPosition(0);
   }
 
   public void setToPosition(double setpoint) {
