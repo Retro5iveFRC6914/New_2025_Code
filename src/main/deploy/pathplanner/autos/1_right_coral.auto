@@ -7,25 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1_right_coral_s1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "elevatorToL3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wristToScore"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "scoreCoral"
+            "pathName": "1_left_coral_s1"
           }
         }
       ]

@@ -53,7 +53,8 @@ public class RobotContainer {
   public final Elevator m_elevator = new Elevator(ElevatorConstants.kLeftID, ElevatorConstants.kRightID/* , ElevatorConstants.kCANCoderID*/);
   public final AlgaeIntake m_algaeIntake = new AlgaeIntake(IntakeConstants.kAlgaeID, IntakeConstants.kAlgaeArmID);
   public final Climber m_climber = new Climber(11);
-  public final CoralIntake m_coralIntake = new CoralIntake(13);
+  public final ArmIntake m_armIntake = new ArmIntake(25);
+  // public final CoralIntake m_armIntake = new CoralIntake(13);
   public final Wrist m_wrist = new Wrist(IntakeConstants.kCoralWristID);
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -88,10 +89,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("elevatorToL3", new ElevatorPosition(m_elevator, ElevatorConstants.L3).withTimeout(2));
     NamedCommands.registerCommand("elevatorToL4", new ElevatorPosition(m_elevator, ElevatorConstants.L4).withTimeout(2));
    // stuff to grab and score coral
-    NamedCommands.registerCommand("grabCoral", new RunCoral(m_coralIntake, 1).withTimeout(1.5));
-    NamedCommands.registerCommand("scoreCoral", new RunCoral(m_coralIntake, -1).withTimeout(1.5));
-    NamedCommands.registerCommand("wristToScore", new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(3));
-    NamedCommands.registerCommand("wristToGrab", new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(1.5));
+    // NamedCommands.registerCommand("grabCoral", new RunCoral(m_armIntake, 1).withTimeout(1.5));
+    // NamedCommands.registerCommand("scoreCoral", new RunCoral(m_armIntake, -1).withTimeout(1.5));
+    // NamedCommands.registerCommand("wristToScore", new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(3));
+    // NamedCommands.registerCommand("wristToGrab", new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(1.5));
 // stuff to grab and score algae 
     // NamedCommands.registerCommand("grabAlgae", new RunAlgae(m_algaeIntake, 1).withTimeout(1.5));
     // NamedCommands.registerCommand("scoreAlgae", new RunAlgae(m_algaeIntake, -1).withTimeout(1.5));
@@ -143,13 +144,15 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-// Runs the Cam to go out 
+  // Stuff for climber/cam stuff
+// Runs the Cam/climber to go out 
   driverXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_climber.run(0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber));
-// Runs the Cam to go in
+// Runs the Cam/climber to go in
   driverXboxController.rightTrigger().whileTrue(new RunCommand(() -> m_climber.run(-0.3), m_climber))
   .onFalse(new RunCommand(() -> m_climber.stop(), m_climber)); 
 
+  // Stuff for elevator
 //Run elevator up
   operatorXboxController.povUp().whileTrue(new RunCommand(() -> m_elevator.run(0.5), m_elevator))
   .onFalse(new RunCommand(() -> m_elevator.stop(), m_elevator));
@@ -171,6 +174,7 @@ public class RobotContainer {
 //Set zero of elevator
   operatorXboxController.leftStick().onTrue(new RunCommand(()-> m_elevator.zeroPosition(), m_elevator));
 
+  // Stuff for algae
 // Runs intake for Algae in 
   operatorXboxController.leftTrigger().whileTrue(new RunCommand(() -> m_algaeIntake.runAlgae(1), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.algaeStop(), m_algaeIntake));
@@ -184,24 +188,26 @@ public class RobotContainer {
   operatorXboxController.rightBumper().whileTrue(new RunCommand(() -> m_algaeIntake.runArm(0.2), m_algaeIntake))
   .onFalse(new RunCommand(() -> m_algaeIntake.stopArm(), m_algaeIntake));
 
-// Runs the intake for Coral in
-   operatorXboxController.x().whileTrue(new RunCommand(() -> m_coralIntake.run(1), m_coralIntake))
-  .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
-// Runs the intake for Coral out 
-  operatorXboxController.b().whileTrue(new RunCommand(() -> m_coralIntake.run(-1), m_coralIntake))
-  .onFalse(new RunCommand(() -> m_coralIntake.stop(), m_coralIntake));
+//   // Stuff fir coral
+// // Runs the intake for algae on arm in
+   operatorXboxController.x().whileTrue(new RunCommand(() -> m_armIntake.runAlgae(1), m_armIntake))
+  .onFalse(new RunCommand(() -> m_armIntake.algaeStop(), m_armIntake));
+// Runs the intake for algae on arm out 
+  operatorXboxController.b().whileTrue(new RunCommand(() -> m_armIntake.runAlgae(-1), m_armIntake))
+  .onFalse(new RunCommand(() -> m_armIntake.algaeStop(), m_armIntake));
   
+//   // Stuff for wrist 
 //Runs wrist down
-  operatorXboxController.a().whileTrue(new RunWrist(m_wrist, 0.3))
+  operatorXboxController.y().whileTrue(new RunWrist(m_wrist, 0.3))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
 //Runs wrist up
-  operatorXboxController.y().whileTrue(new RunWrist(m_wrist, -0.3))
+  operatorXboxController.a().whileTrue(new RunWrist(m_wrist, -0.3))
   .onFalse(new RunCommand(() -> m_wrist.stop(), m_wrist));
 
-//Runs wrist to grab position
-  operatorXboxController.back().and(operatorXboxController.povLeft()).onTrue(new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(3));
-//Runs wrist to score position
-operatorXboxController.back().and(operatorXboxController.povRight()).onTrue(new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(3));
+// //Runs wrist to grab position
+//   operatorXboxController.back().and(operatorXboxController.povLeft()).onTrue(new WristPosition(m_wrist, IntakeConstants.grabPosition).withTimeout(3));
+// //Runs wrist to score position
+// operatorXboxController.back().and(operatorXboxController.povRight()).onTrue(new WristPosition(m_wrist, IntakeConstants.scorePosition).withTimeout(3));
 }
     
   public Command getAutonomousCommand() {

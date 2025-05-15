@@ -40,9 +40,10 @@ public class RunWrist extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (wrist.getPos() <= -0.001) {
+    if ((wrist.getPos() >= 0.6) ) {
       return true;
-    }
+    } else {
     return false;
+    }
   }
 }
